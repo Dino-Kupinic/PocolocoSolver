@@ -21,10 +21,10 @@ def test_is_valid_position_basic():
 
 
 def test_is_valid_position_advanced():
-    playground2 = [
+    playground2 = np.array([
         [0, 1, 0],
         [0, 0, 0]
-    ]
+    ])
 
     piece_l = np.array([
         [2, 0],
