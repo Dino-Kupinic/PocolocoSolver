@@ -20,7 +20,7 @@ git clone https://github.com/Dino-Kupinic/PocolocoSolver.git
 
 ## 👀 Tech Stack
 
-// WIP
+Python, Panda3D
 
 ## 🦞 License
 
