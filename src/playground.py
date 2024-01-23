@@ -97,6 +97,7 @@ def move_piece_through_maze(
         runs += 1
         current_coordinate = next_to_visit.get()
 
+
         if np.array_equal(current_coordinate, piece_goal):
             insert_piece(playground, piece, current_coordinate)
             print('Das Piece ist an der richtigen Stelle', current_coordinate)
