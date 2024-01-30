@@ -71,10 +71,8 @@ def remove_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D
 
 
 def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
-    return [
-        piece_coordinates + offset
-        for offset in ([0, 1], [1, 0], [0, -1], [-1, 0])
-    ]
+    for offset in ([0, 1], [1, 0], [0, -1], [-1, 0]):
+        yield piece_coordinates + offset
 
 
 def move_piece_through_maze(
@@ -88,9 +86,7 @@ def move_piece_through_maze(
     next_to_visit = queue.Queue()
     next_to_visit.put(piece_coordinates)
 
-    runs = 0
     while not next_to_visit.empty():
-        runs += 1
         current_coordinate = next_to_visit.get()
         print(current_coordinate)
 
