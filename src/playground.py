@@ -81,7 +81,7 @@ def move_piece_through_maze(
         piece_coordinates: Array1D,
         piece_goal: Array1D,
 ) -> None:
-    checked_coordinates = list()
+    checked_coordinates = set()
 
     next_to_visit = queue.Queue()
     next_to_visit.put(piece_coordinates)
@@ -100,7 +100,8 @@ def move_piece_through_maze(
             # print(runs)
 
         for neighbour in get_neighbour_positions(current_coordinate):
-            if is_valid_position(playground, piece, neighbour):
-                next_to_visit.put(neighbour)
+            if tuple(neighbour) not in checked_coordinates:
+                if is_valid_position(playground, piece, neighbour):
+                    next_to_visit.put(neighbour)
 
-        checked_coordinates.append(current_coordinate)
+        checked_coordinates.add(tuple(current_coordinate))
