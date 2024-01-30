@@ -1,7 +1,7 @@
 from typing import Final
 
 import numpy as np
-import queue
+import heapq
 
 from src.model.SearchNode import SearchNode
 
@@ -91,6 +91,10 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
     return path
 
 
+def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) -> float:
+    return abs(piece_coords1[0] - piece_coords2[0]) + abs(piece_coords1[1] - piece_coords2[1])
+
+
 def move_piece_through_maze(
         playground: Array2D,
         piece: Array2D,
@@ -99,11 +103,13 @@ def move_piece_through_maze(
 ) -> None:
     checked_coordinates = set()
 
-    next_to_visit = queue.Queue()
-    next_to_visit.put(SearchNode(piece_start))
+    next_to_visit = []
 
-    while not next_to_visit.empty():
-        current_node = next_to_visit.get()
+    lower_bound_distance = calc_lower_bound_distance(piece_start, piece_goal)
+    heapq.heappush(next_to_visit, (SearchNode(piece_start, lower_bound_distance)))
+
+    while len(next_to_visit) > 0:
+        current_node = heapq.heappop(next_to_visit)
         print(current_node)
 
         if np.array_equal(current_node.coordinates, piece_goal):
@@ -116,6 +122,9 @@ def move_piece_through_maze(
         for neighbour in get_neighbour_positions(current_node.coordinates):
             if tuple(neighbour) not in checked_coordinates:
                 if is_valid_position(playground, piece, neighbour):
-                    next_to_visit.put(SearchNode(neighbour, current_node))
-
+                    lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
+                                                     + len(get_path_rec(current_node))
+                    heapq.heappush(next_to_visit,
+                                   SearchNode(neighbour, lower_bound_distance_neighbour, current_node)
+                                   )
         checked_coordinates.add(tuple(current_node.coordinates))
