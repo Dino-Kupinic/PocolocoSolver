@@ -36,6 +36,12 @@ def generate_playground() -> Array2D:
 def get_piece_dest(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> Array2D:
     piece_x, piece_y = piece_coordinates
     dim_y, dim_x = piece.shape
+    size_y, size_x = playground.shape
+
+    valid_x_pos = 0 <= piece_x <= size_x - dim_x
+    valid_y_pos = 0 <= piece_y <= size_y - dim_y
+    assert valid_x_pos and valid_y_pos, f"Invalid piece coordinates: {piece_x}, {piece_y}"
+
     piece_dest = playground[piece_y:piece_y + dim_y, piece_x: piece_x + dim_x]
     return piece_dest
 
@@ -64,39 +70,29 @@ def remove_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D
     piece_dest -= piece
 
 
+def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
+    return [
+        piece_coordinates + offset
+        for offset in ([0, 1], [1, 0], [0, -1], [-1, 0])
+    ]
+
+
 def move_piece_through_maze(
         playground: Array2D,
         piece: Array2D,
         piece_coordinates: Array1D,
         piece_goal: Array1D,
 ) -> None:
-    piece_coordinates_before = piece_coordinates.copy()
-
     checked_coordinates = list()
 
     next_to_visit = queue.Queue()
     next_to_visit.put(piece_coordinates)
 
-    '''while piece_coordinates is not piece_goal:
-        if not is_valid_position(playground, piece, piece_coordinates_before):
-            remove_piece(playground, piece, piece_coordinates_before)
-
-        if is_valid_position(playground, piece, piece_coordinates):
-            insert_piece(playground, piece, piece_coordinates)
-            piece_coordinates_before = piece_coordinates.copy()
-
-            piece_coordinates += [1, 0]
-
-        else:
-            piece_coordinates[0] = 0
-            piece_coordinates += [0, 1]
-
-        print_playground(playground)'''
     runs = 0
     while not next_to_visit.empty():
         runs += 1
         current_coordinate = next_to_visit.get()
-
+        print(current_coordinate)
 
         if np.array_equal(current_coordinate, piece_goal):
             insert_piece(playground, piece, current_coordinate)
@@ -104,18 +100,11 @@ def move_piece_through_maze(
             print_playground(playground)
             break
         else:
-            print(runs)
+            pass
+            # print(runs)
 
-        if is_valid_position(playground, piece, current_coordinate - [1, 0]):
-            next_to_visit.put(current_coordinate - [1, 0])
-
-        if is_valid_position(playground, piece, current_coordinate + [1, 0]):
-            next_to_visit.put(current_coordinate + [1, 0])
-
-        if is_valid_position(playground, piece, current_coordinate + [0, 1]):
-            next_to_visit.put(current_coordinate + [0, 1])
-
-        if is_valid_position(playground, piece, current_coordinate - [0, 1]):
-            next_to_visit.put(current_coordinate - [0, 1])
+        for neighbour in get_neighbour_positions(current_coordinate):
+            if is_valid_position(playground, piece, neighbour):
+                next_to_visit.put(neighbour)
 
         checked_coordinates.append(current_coordinate)

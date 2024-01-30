@@ -14,8 +14,9 @@ def main():
         [2, 2]
     ])
 
+    # border rows and columns may not be empty
     piece_j = np.array([
-        [0, 0],
+        [0, 2],
         [2, 2]
     ])
 
@@ -26,7 +27,7 @@ def main():
     # else:
     #     print("Invalid position")
 
-    move_piece_through_maze(my_playground, piece_j, piece_coordinates, piece_goal)
+    move_piece_through_maze(my_playground, piece_l, piece_coordinates, piece_goal)
 
 
 if __name__ == "__main__":
