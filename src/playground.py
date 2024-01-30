@@ -78,9 +78,17 @@ def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
 
 
 def print_path(node: SearchNode):
+    print("Path: ", end="")
+    path = get_path_rec(node)
+    print(", ".join(map(str, path)))
+
+
+def get_path_rec(node: SearchNode) -> list[Array1D]:
+    path = []
     if node.parent is not None:
-        print_path(node.parent)
-    print(node.coordinates, end="")
+        path = get_path_rec(node.parent)
+    path.append(node.coordinates)
+    return path
 
 
 def move_piece_through_maze(
