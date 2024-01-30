@@ -3,6 +3,8 @@ from typing import Final
 import numpy as np
 import queue
 
+from src.model.SearchNode import SearchNode
+
 type Array2D = np.ndarray
 type Array1D = np.ndarray
 
@@ -78,30 +80,27 @@ def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
 def move_piece_through_maze(
         playground: Array2D,
         piece: Array2D,
-        piece_coordinates: Array1D,
+        piece_start: Array1D,
         piece_goal: Array1D,
 ) -> None:
     checked_coordinates = set()
 
     next_to_visit = queue.Queue()
-    next_to_visit.put(piece_coordinates)
+    next_to_visit.put(SearchNode(piece_start))
 
     while not next_to_visit.empty():
-        current_coordinate = next_to_visit.get()
-        print(current_coordinate)
+        current_node = next_to_visit.get()
+        print(current_node)
 
-        if np.array_equal(current_coordinate, piece_goal):
-            insert_piece(playground, piece, current_coordinate)
-            print('Das Piece ist an der richtigen Stelle', current_coordinate)
+        if np.array_equal(current_node.coordinates, piece_goal):
+            insert_piece(playground, piece, current_node.coordinates)
+            print('Das Piece ist an der richtigen Stelle', current_node)
             print_playground(playground)
             break
-        else:
-            pass
-            # print(runs)
 
-        for neighbour in get_neighbour_positions(current_coordinate):
+        for neighbour in get_neighbour_positions(current_node.coordinates):
             if tuple(neighbour) not in checked_coordinates:
                 if is_valid_position(playground, piece, neighbour):
-                    next_to_visit.put(neighbour)
+                    next_to_visit.put(SearchNode(neighbour, current_node))
 
-        checked_coordinates.add(tuple(current_coordinate))
+        checked_coordinates.add(tuple(current_node.coordinates))
