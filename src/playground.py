@@ -77,6 +77,12 @@ def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
         yield piece_coordinates + offset
 
 
+def print_path(node: SearchNode):
+    if node.parent is not None:
+        print_path(node.parent)
+    print(node.coordinates, end="")
+
+
 def move_piece_through_maze(
         playground: Array2D,
         piece: Array2D,
@@ -96,6 +102,7 @@ def move_piece_through_maze(
             insert_piece(playground, piece, current_node.coordinates)
             print('Das Piece ist an der richtigen Stelle', current_node)
             print_playground(playground)
+            print_path(current_node)
             break
 
         for neighbour in get_neighbour_positions(current_node.coordinates):
