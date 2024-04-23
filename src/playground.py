@@ -77,13 +77,13 @@ def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array
 
 
 # this solution only delivers coordinates where there are only clear fields and doesn't take pieces into consideration
-def is_valid_position(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> bool:
+def is_valid_position(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> bool:
     piece_dest = get_piece_dest(playground, piece, piece_coordinates)
 
     return (piece_dest * piece).max() == 0
 
 
-def insert_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> None:
+def insert_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> None:
     piece_dest = get_piece_dest(playground, piece, piece_coordinates)
 
     piece_dest += piece
@@ -97,7 +97,7 @@ def print_playground(playground) -> None:
         print()
 
 
-def remove_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> None:
+def remove_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> None:
     piece_dest = get_piece_dest(playground, piece, piece_coordinates)
     piece_dest -= piece
 
