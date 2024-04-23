@@ -103,7 +103,7 @@ def remove_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D
 
 
 def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
-    for offset in ([0, 1], [1, 0], [0, -1], [-1, 0]):
+    for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
         yield piece_coordinates + offset
 
 
