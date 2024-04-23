@@ -5,9 +5,9 @@ from src.playground import generate_playground, is_valid_position, insert_piece,
 
 
 def main():
-    piece_coordinates = np.array([1, 1, 0])
+    piece_coordinates = np.array([1, 1, 1])
 
-    piece_goal = np.array([1, 2, 0])
+    piece_goal = np.array([2, 2, 4])
 
     piece_test = np.array([
         [
