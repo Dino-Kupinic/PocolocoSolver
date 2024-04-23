@@ -62,16 +62,17 @@ def generate_playground() -> Array3D:
     return playground_test
 
 
-def get_piece_dest(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> Array2D:
-    piece_x, piece_y = piece_coordinates
-    dim_y, dim_x = piece.shape
-    size_y, size_x = playground.shape
+def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> Array3D:
+    piece_x, piece_y, piece_z = piece_coordinates
+    dim_z, dim_y, dim_x = piece.shape
+    size_z, size_y, size_x = playground.shape
 
     valid_x_pos = 0 <= piece_x <= size_x - dim_x
     valid_y_pos = 0 <= piece_y <= size_y - dim_y
-    assert valid_x_pos and valid_y_pos, f"Invalid piece coordinates: {piece_x}, {piece_y}"
+    valid_z_pos = 0 <= piece_z <= size_z - dim_z
+    assert valid_x_pos and valid_y_pos and valid_z_pos, f"Invalid piece coordinates: {piece_x}, {piece_y}, {piece_z}"
 
-    piece_dest = playground[piece_y:piece_y + dim_y, piece_x: piece_x + dim_x]
+    piece_dest = playground[piece_z:piece_z + dim_z, piece_y:piece_y + dim_y, piece_x: piece_x + dim_x]
     return piece_dest
 
 
