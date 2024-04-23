@@ -1,13 +1,13 @@
 import numpy as np
 
 from src.playground import generate_playground, is_valid_position, insert_piece, print_playground, remove_piece, \
-    get_piece_dest, move_piece_through_maze
+    get_neighbour_positions, move_piece_through_maze
 
 
 def main():
-    piece_coordinates = np.array([1, 1])
+    piece_coordinates = np.array([1, 1, 0])
 
-    piece_goal = np.array([3, 3, 0])
+    piece_goal = np.array([1, 2, 0])
 
     piece_test = np.array([
         [
@@ -29,15 +29,7 @@ def main():
     ])
 
     my_playground = generate_playground()
-
-    # if is_valid_position(my_playground, piece_l, piece_coordinates):
-    #     insert_piece(my_playground, piece_l, piece_coordinates)
-    #     move_piece_through_maze(my_playground, piece_l, piece_coordinates, piece_goal)
-    # else:
-    #     print("Invalid position")
-
-    piece_dest = get_piece_dest(my_playground, piece_test, piece_goal)
-    print(piece_dest)
+    move_piece_through_maze(my_playground, piece_test, piece_coordinates, piece_goal)
 
 
 if __name__ == "__main__":

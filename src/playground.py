@@ -122,12 +122,13 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
 
 
 def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) -> float:
-    return abs(piece_coords1[0] - piece_coords2[0]) + abs(piece_coords1[1] - piece_coords2[1])
+    return abs(piece_coords1[0] - piece_coords2[0]) + abs(piece_coords1[1] - piece_coords2[1]) + abs(piece_coords1[2] -
+                                                                                                     piece_coords2[2])
 
 
 def move_piece_through_maze(
-        playground: Array2D,
-        piece: Array2D,
+        playground: Array3D,
+        piece: Array3D,
         piece_start: Array1D,
         piece_goal: Array1D,
 ) -> None:
@@ -144,7 +145,7 @@ def move_piece_through_maze(
 
         if np.array_equal(current_node.coordinates, piece_goal):
             insert_piece(playground, piece, current_node.coordinates)
-            print('Das Piece ist an der richtigen Stelle', current_node)
+            print('Das Piece ist an der richtigen Stelle!', current_node)
             print_playground(playground)
             print_path(current_node)
             break
