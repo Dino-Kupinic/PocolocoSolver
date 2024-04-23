@@ -5,6 +5,7 @@ import heapq
 
 from src.model.SearchNode import SearchNode
 
+type Array3D = np.ndarray
 type Array2D = np.ndarray
 type Array1D = np.ndarray
 
@@ -22,17 +23,43 @@ Represents an empty field in which a cube can move into
 """
 
 
-def generate_playground() -> Array2D:
-    playground = np.array([
-        [9, 9, 9, 9, 9, 9],
-        [9, 0, 0, 1, 1, 9],
-        [9, 0, 0, 0, 1, 9],
-        [9, 1, 0, 0, 0, 9],
-        [9, 1, 1, 0, 0, 9],
-        [9, 9, 9, 9, 9, 9]
+def generate_playground() -> Array3D:
+    playground_test = np.array([
+        [
+            [9, 9, 9, 9, 9, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 1, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 9, 9, 9, 9, 9]
+        ],
+        [
+            [9, 9, 9, 9, 9, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 1, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 9, 9, 9, 9, 9]
+        ],
+        [
+            [9, 9, 9, 9, 9, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 1, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 9, 9, 9, 9, 9]
+        ],
+        [
+            [9, 9, 9, 9, 9, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 1, 0, 0, 0, 9],
+            [9, 0, 0, 0, 0, 9],
+            [9, 9, 9, 9, 9, 9]
+        ]
     ])
 
-    return playground
+    return playground_test
 
 
 def get_piece_dest(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> Array2D:
@@ -63,8 +90,10 @@ def insert_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D
 
 def print_playground(playground) -> None:
     print()
-    for row in playground:
-        print(row)
+    for array in playground:
+        for row in array:
+            print(row)
+        print()
 
 
 def remove_piece(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> None:
