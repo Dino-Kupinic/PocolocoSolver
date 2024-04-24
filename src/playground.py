@@ -36,7 +36,13 @@ def generate_playground() -> Array3D:
     for i in range(4, 10):
         playground[i, :, :] += layer
 
-    print_playground(playground)
+    return playground
+
+
+def add_obstacles(playground: Array3D, obstacles: list[Array1D]):
+    for obstacle in obstacles:
+        playground[obstacle[2], obstacle[1], obstacle[0]] = 1
+
     return playground
 
 
@@ -82,7 +88,12 @@ def remove_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D
 
 def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
     for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
-        yield piece_coordinates + offset
+        neighbour_coordinates = piece_coordinates + offset
+        if min(neighbour_coordinates) < 0:
+            continue
+        if max(neighbour_coordinates[:2]) > 4 or neighbour_coordinates[2] > 6:
+            continue
+        yield neighbour_coordinates
 
 
 def print_path(node: SearchNode):
@@ -124,7 +135,6 @@ def move_piece_through_maze(
         if np.array_equal(current_node.coordinates, piece_goal):
             insert_piece(playground, piece, current_node.coordinates)
             print('Das Piece ist an der richtigen Stelle!', current_node)
-            print_playground(playground)
             print_path(current_node)
             break
 
