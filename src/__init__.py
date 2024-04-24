@@ -5,9 +5,9 @@ from src.playground import generate_playground, is_valid_position, insert_piece,
 
 
 def main():
-    piece_coordinates = np.array([1, 1, 1])
+    piece_coordinates = np.array([0, 0, 0])
 
-    piece_goal = np.array([2, 2, 4])
+    piece_goal = np.array([4, 1, 1])
 
     piece_test = np.array([
         [
@@ -30,7 +30,6 @@ def main():
 
     my_playground = generate_playground()
     move_piece_through_maze(my_playground, piece_test, piece_coordinates, piece_goal)
-
 
 if __name__ == "__main__":
     main()
