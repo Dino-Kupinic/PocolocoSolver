@@ -10,10 +10,10 @@ class GameField:
         """Generate a game field"""
         return np.array([
             [CB, CB, CB, CB, CB, CB],
-            [CB, EF, EF, OF, OF, CB],
             [CB, EF, EF, EF, OF, CB],
+            [CB, EF, EF, EF, EF, CB],
+            [CB, EF, EF, EF, EF, CB],
             [CB, OF, EF, EF, EF, CB],
-            [CB, OF, OF, EF, EF, CB],
             [CB, CB, CB, CB, CB, CB]
         ])
 

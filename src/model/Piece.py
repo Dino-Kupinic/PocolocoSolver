@@ -1,10 +1,8 @@
-from src.model.Cube import Cube
-
-
 class Piece:
-    _cubes: list[Cube] = None
+    """Class representing a piece. The game has a total of 4 pieces."""
+    _cubes = None
 
-    def __init__(self, cubes: list[Cube]):
+    def __init__(self, cubes):
         self._cubes = cubes
 
     @classmethod
