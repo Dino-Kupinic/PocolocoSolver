@@ -1,38 +1,10 @@
 from typing import Final
 
-import numpy as np
 import heapq
 
 from src.model.SearchNode import SearchNode
 
-type Array2D = np.ndarray
-type Array1D = np.ndarray
-
-CUBE_BORDER: Final[int] = 9
-"""
-Represents the border of the poco loco. Used for "out of bound" checks
-"""
-OCCUPIED_FIELD: Final[int] = 1
-"""
-Represents a field in which a cube resides.
-"""
-EMPTY_FIELD: Final[int] = 0
-"""
-Represents an empty field in which a cube can move into
-"""
-
-
-def generate_playground() -> Array2D:
-    playground = np.array([
-        [9, 9, 9, 9, 9, 9],
-        [9, 0, 0, 1, 1, 9],
-        [9, 0, 0, 0, 1, 9],
-        [9, 1, 0, 0, 0, 9],
-        [9, 1, 1, 0, 0, 9],
-        [9, 9, 9, 9, 9, 9]
-    ])
-
-    return playground
+from shared.types import Array1D, Array2D, np
 
 
 def get_piece_dest(playground: Array2D, piece: Array2D, piece_coordinates: Array1D) -> Array2D:

@@ -1,6 +1,8 @@
 import numpy as np
 
-from src.playground import generate_playground, is_valid_position, insert_piece, print_playground, remove_piece, \
+from src.model.GameField import GameField
+from src.model.Piece import Piece
+from src.playground import is_valid_position, insert_piece, print_playground, remove_piece, \
     move_piece_through_maze
 
 
@@ -20,7 +22,7 @@ def main():
         [2, 2]
     ])
 
-    my_playground = generate_playground()
+    my_playground = GameField.generate()
     # if is_valid_position(my_playground, piece_l, piece_coordinates):
     #     insert_piece(my_playground, piece_l, piece_coordinates)
     #     move_piece_through_maze(my_playground, piece_l, piece_coordinates, piece_goal)
