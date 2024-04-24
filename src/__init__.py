@@ -34,5 +34,6 @@ def main():
     print_playground(my_playground)
     move_piece_through_maze(my_playground, piece_test, piece_coordinates, piece_goal)
 
+
 if __name__ == "__main__":
     main()
