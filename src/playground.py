@@ -62,6 +62,7 @@ def calc_lower_bound_distance(piece_coords1: list[Array1D], piece_coords2: list[
         sum_pieces += abs(piece_coords1[i][0] - piece_coords2[i][0])
     return sum_pieces
 
+
 def move_piece_through_maze(
         game_field: Array2D,
         pieces: list[Array2D],
@@ -75,7 +76,8 @@ def move_piece_through_maze(
     lower_bound_distance = calc_lower_bound_distance(piece_start_positions, piece_goals)
     for index in range(len(piece_start_positions)):
         heapq.heappush(next_to_visit,
-                       (SearchNode(piece_start_positions[index], lower_bound_distance, piece=pieces[index], goal=piece_goals[index])))
+                       (SearchNode(piece_start_positions[index], lower_bound_distance, piece=pieces[index],
+                                   goal=piece_goals[index])))
 
     while len(next_to_visit) > 0:
         current_node: SearchNode = heapq.heappop(next_to_visit)
@@ -95,6 +97,7 @@ def move_piece_through_maze(
                     lower_bound_distance_neighbour = calc_lower_bound_distance([neighbour], [current_node.goal]) \
                                                      + len(get_path_rec(current_node))
                     heapq.heappush(next_to_visit,
-                                   SearchNode(neighbour, lower_bound_distance_neighbour, current_node, current_node.piece, current_node.goal)
+                                   SearchNode(neighbour, lower_bound_distance_neighbour, current_node,
+                                              current_node.piece, current_node.goal)
                                    )
         checked_coordinates.add(tuple(current_node.coordinates))
