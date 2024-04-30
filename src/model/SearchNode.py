@@ -1,6 +1,4 @@
-import numpy as np
-
-type Array1D = np.ndarray
+from ..shared.types import Array2D
 
 
 class SearchNode:

@@ -63,8 +63,8 @@ def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) ->
 def move_piece_through_maze(
         playground: Array2D,
         piece: Array2D,
-        piece_start: Array1D,
-        piece_goal: Array1D,
+        piece_start: Array2D,
+        piece_goal: Array2D,
 ) -> None:
     checked_coordinates = set()
 
