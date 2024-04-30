@@ -38,8 +38,7 @@ def main():
     # else:
     #     print("Invalid position")
 
-    move_piece_through_maze(my_playground, [piece_l, piece_j], [piece_coordinates_l, piece_coordinates_j], [piece_goal_l, piece_goal_j])
-    logger.info('Finished')
+    move_piece_through_maze(my_playground, piece_l, piece_coordinates_l, piece_goal_l)
 
 
 if __name__ == "__main__":
