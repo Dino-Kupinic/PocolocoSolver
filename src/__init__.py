@@ -1,6 +1,7 @@
 import numpy as np
 
-from src.playground import generate_playground, is_valid_position, insert_piece, print_playground, remove_piece, \
+from src.model.GameField import GameField
+from src.playground import is_valid_position, insert_pieces, print_playground, remove_piece, \
     get_neighbour_positions, move_piece_through_maze, add_obstacles
 
 

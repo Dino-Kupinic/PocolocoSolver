@@ -8,7 +8,7 @@ class SearchNode:
         self.length_estimate = length_estimate
 
     def __str__(self):
-        return f"{self.coordinates}, {self.parent.coordinates if self.parent is not None else None}"
+        return f"{self.coordinates} \nParent:\n {self.parent.coordinates if self.parent is not None else None}"
 
     def __lt__(self, other: "SearchNode"):
         return self.length_estimate < other.length_estimate

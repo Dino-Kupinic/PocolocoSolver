@@ -32,10 +32,10 @@ def is_valid_position(playground: Array3D, piece: Array3D, piece_coordinates: Ar
     return (piece_dest * piece).max() == 0
 
 
-def insert_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> None:
-    piece_dest = get_piece_dest(playground, piece, piece_coordinates)
-
-    piece_dest += piece
+def insert_pieces(playground: Array3D, pieces: list[Array3D], piece_coordinates: Array2D) -> None:
+    for piece, piece_coordinates in zip(pieces, piece_coordinates):
+        piece_dest = get_piece_dest(playground, piece, piece_coordinates)
+        piece_dest += piece
 
 
 def print_playground(playground) -> None:
@@ -75,37 +75,36 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
     return path
 
 
-def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) -> float:
-    return abs(piece_coords1[0] - piece_coords2[0]) + abs(piece_coords1[1] - piece_coords2[1]) + abs(piece_coords1[2] -
-                                                                                                     piece_coords2[2])
+def calc_lower_bound_distance(piece_coords1: Array2D, piece_coords2: Array2D) -> float:
+    return np.sum(np.abs(piece_coords1 - piece_coords2))
 
 
 def move_piece_through_maze(
         playground: Array3D,
-        piece: Array3D,
-        piece_start: Array1D,
-        piece_goal: Array1D,
+        pieces: list[Array3D],
+        piece_start: Array2D,
+        piece_goal: Array2D
 ) -> None:
     checked_coordinates = set()
 
     next_to_visit = []
 
     lower_bound_distance = calc_lower_bound_distance(piece_start, piece_goal)
-    heapq.heappush(next_to_visit, (SearchNode(piece_start, lower_bound_distance)))
+    heapq.heappush(next_to_visit, SearchNode(piece_start, lower_bound_distance))
 
     while len(next_to_visit) > 0:
         current_node = heapq.heappop(next_to_visit)
         print(current_node)
 
         if np.array_equal(current_node.coordinates, piece_goal):
-            insert_piece(playground, piece, current_node.coordinates)
+            insert_pieces(playground, pieces, current_node.coordinates)
             print('Das Piece ist an der richtigen Stelle!', current_node)
             print_path(current_node)
             break
 
         for neighbour in get_neighbour_positions(current_node.coordinates):
             if tuple(neighbour) not in checked_coordinates:
-                if is_valid_position(playground, piece, neighbour):
+                if is_valid_position(playground, pieces, neighbour):
                     lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
                                                      + len(get_path_rec(current_node))
                     heapq.heappush(next_to_visit,
