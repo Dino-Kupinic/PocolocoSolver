@@ -11,6 +11,7 @@ def main():
 
     piece_goal = np.array([1, 1, 4])
 
+    # todo: extract into function that returns a list of the 4 pieces
     piece_test = np.array([
         [
             [2, 2],
