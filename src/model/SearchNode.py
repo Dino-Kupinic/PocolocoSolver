@@ -2,7 +2,7 @@ from ..shared.types import Array2D
 
 
 class SearchNode:
-    def __init__(self, coordinates: Array1D, length_estimate: float, parent: "SearchNode" = None):
+    def __init__(self, coordinates: Array2D, length_estimate: float, parent: "SearchNode" = None):
         self.coordinates = coordinates
         self.parent = parent
         self.length_estimate = length_estimate
