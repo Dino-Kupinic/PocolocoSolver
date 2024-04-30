@@ -26,10 +26,11 @@ def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array
 
 
 # this solution only delivers coordinates where there are only clear fields and doesn't take pieces into consideration
-def is_valid_position(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> bool:
-    piece_dest = get_piece_dest(playground, piece, piece_coordinates)
-
-    return (piece_dest * piece).max() == 0
+def is_valid_position(playground: Array3D, pieces: list[Array3D], pieces_coordinates: Array2D) -> bool:
+    for piece, piece_coordinates in zip(pieces, pieces_coordinates):
+        piece_dest = get_piece_dest(playground, piece, piece_coordinates)
+        if (piece_dest * piece).max() != 0: return False
+    return True
 
 
 def insert_pieces(playground: Array3D, pieces: list[Array3D], piece_coordinates: Array2D) -> None:
@@ -51,14 +52,17 @@ def remove_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D
     piece_dest -= piece
 
 
-def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
-    for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
-        neighbour_coordinates = piece_coordinates + offset
-        if min(neighbour_coordinates) < 0:
-            continue
-        if max(neighbour_coordinates[:2]) > 4 or neighbour_coordinates[2] > 6:
-            continue
-        yield neighbour_coordinates
+def get_neighbour_positions(pieces_coordinates: Array2D) -> list[Array2D]:
+    for piece_index in range(len(pieces_coordinates)):
+        for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
+            neighbour_coordinates = pieces_coordinates[piece_index] + offset
+            if min(neighbour_coordinates) < 0:
+                continue
+            if max(neighbour_coordinates[:2]) > 4 or neighbour_coordinates[2] > 6:
+                continue
+            neighbouring_coordinates = pieces_coordinates.copy()
+            neighbouring_coordinates[piece_index] = neighbour_coordinates
+            yield neighbouring_coordinates
 
 
 def print_path(node: SearchNode):
@@ -77,6 +81,10 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
 
 def calc_lower_bound_distance(piece_coords1: Array2D, piece_coords2: Array2D) -> float:
     return np.sum(np.abs(piece_coords1 - piece_coords2))
+
+
+def freeze(mat: Array2D) -> tuple[tuple[float]]:
+    return tuple(tuple(row) for row in mat)
 
 
 def move_piece_through_maze(
@@ -103,11 +111,11 @@ def move_piece_through_maze(
             break
 
         for neighbour in get_neighbour_positions(current_node.coordinates):
-            if tuple(neighbour) not in checked_coordinates:
+            if freeze(neighbour) not in checked_coordinates:
                 if is_valid_position(playground, pieces, neighbour):
                     lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
                                                      + len(get_path_rec(current_node))
                     heapq.heappush(next_to_visit,
                                    SearchNode(neighbour, lower_bound_distance_neighbour, current_node)
                                    )
-        checked_coordinates.add(tuple(current_node.coordinates))
+        checked_coordinates.add(freeze(current_node.coordinates))
