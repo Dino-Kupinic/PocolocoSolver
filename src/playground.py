@@ -1,42 +1,7 @@
-from typing import Final
-
-import numpy as np
 import heapq
 
 from src.model.SearchNode import SearchNode
-
-type Array3D = np.ndarray
-type Array2D = np.ndarray
-type Array1D = np.ndarray
-
-CUBE_BORDER: Final[int] = 9
-"""
-Represents the border of the poco loco. Used for "out of bound" checks
-"""
-OCCUPIED_FIELD: Final[int] = 1
-"""
-Represents a field in which a cube resides.
-"""
-EMPTY_FIELD: Final[int] = 0
-"""
-Represents an empty field in which a cube can move into
-"""
-
-
-def generate_playground() -> Array3D:
-    playground: Array3D = np.zeros((10, 6, 6))
-    layer: Array2D = [
-        [9, 9, 9, 9, 9, 9],
-        [9, 0, 0, 0, 0, 9],
-        [9, 0, 0, 0, 0, 9],
-        [9, 0, 0, 0, 0, 9],
-        [9, 0, 0, 0, 0, 9],
-        [9, 9, 9, 9, 9, 9]
-    ]
-    for i in range(4, 10):
-        playground[i, :, :] += layer
-
-    return playground
+from shared.types import Array1D, Array2D, Array3D, np
 
 
 def add_obstacles(playground: Array3D, obstacles: list[Array1D]):

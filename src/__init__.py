@@ -29,7 +29,7 @@ def main():
         ]
     ])
 
-    my_playground = generate_playground()
+    my_playground = GameField.generate()
     add_obstacles(my_playground, obstacles)
     print_playground(my_playground)
     move_piece_through_maze(my_playground, piece_test, piece_coordinates, piece_goal)
