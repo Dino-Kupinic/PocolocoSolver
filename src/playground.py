@@ -94,7 +94,7 @@ def freeze(mat: Array2D) -> tuple[tuple[float]]:
 
 
 def generate_json(node: SearchNode):
-    path = get_path_rec(node)
+    path = list(reversed(get_path_rec(node)))
     pieces = []
     old = path[0]
     for coordinates in path[1:]:
