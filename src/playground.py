@@ -128,7 +128,7 @@ def move_piece_through_maze(
 
     searchNodeCnt = 0
     while len(next_to_visit) > 0:
-        current_node = heapq.heappop(next_to_visit)
+        current_node: SearchNode = heapq.heappop(next_to_visit)
         searchNodeCnt += 1
         print(f"\r{searchNodeCnt}: {current_node.length_estimate}, {len(next_to_visit)}", end='')
         #print(current_node)
@@ -144,7 +144,7 @@ def move_piece_through_maze(
             if freeze(neighbour) not in checked_coordinates:
                 if is_valid_position(playground, pieces, neighbour):
                     lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
-                                                     + len(get_path_rec(current_node))
+                                                     + current_node.depth
                     heapq.heappush(next_to_visit,
                                    SearchNode(neighbour, lower_bound_distance_neighbour, current_node)
                                    )

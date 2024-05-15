@@ -6,6 +6,7 @@ class SearchNode:
         self.coordinates = coordinates
         self.parent = parent
         self.length_estimate = length_estimate
+        self.depth = 0 if parent is None else parent.depth + 1
 
     def __str__(self):
         return f"{self.coordinates} \nParent:\n {self.parent.coordinates if self.parent is not None else None}"
