@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.playground import is_valid_position, insert_piece, remove_piece, get_piece_dest, Array2D, Array1D
+from src.playground import is_valid_position, insert_pieces, remove_piece, get_piece_dest, Array2D, Array1D
 
 
 def test_is_valid_position_basic():
@@ -46,7 +46,7 @@ def test_insert_piece_advanced():
         [2, 2]
     ])
 
-    insert_piece(playground2, piece_l, np.array([0, 0]))
+    insert_pieces(playground2, piece_l, np.array([0, 0]))
 
     playground2_expected = np.array([
         [2, 1, 0],

@@ -1,130 +1,14 @@
 import heapq
-import json
-from typing import Final
-
-import numpy as np
 
 from src.model.SearchNode import SearchNode
-
-type Array3D = np.ndarray
-type Array2D = np.ndarray
-type Array1D = np.ndarray
-
-CUBE_BORDER: Final[int] = 9
-"""
-Represents the border of the poco loco. Used for "out of bound" checks
-"""
-OCCUPIED_FIELD: Final[int] = 1
-"""
-Represents a field in which a cube resides.
-"""
-EMPTY_FIELD: Final[int] = 0
-"""
-Represents an empty field in which a cube can move into
-"""
+from shared.types import Array1D, Array2D, Array3D, np
 
 
-def generate_playground() -> Array3D:
-    playground_test = np.array([
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 1, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 1, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 1, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 1, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-        [
-            [9, 9, 9, 9, 9, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 0, 0, 0, 0, 9],
-            [9, 9, 9, 9, 9, 9]
-        ],
-    ])
+def add_obstacles(playground: Array3D, obstacles: list[Array1D]):
+    for obstacle in obstacles:
+        playground[obstacle[2], obstacle[1], obstacle[0]] = 1
 
-    return playground_test
+    return playground
 
 
 def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> Array3D:
@@ -142,22 +26,25 @@ def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array
 
 
 # this solution only delivers coordinates where there are only clear fields and doesn't take pieces into consideration
-def is_valid_position(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> bool:
-    piece_dest = get_piece_dest(playground, piece, piece_coordinates)
+def is_valid_position(playground: Array3D, pieces: list[Array3D], pieces_coordinates: Array2D) -> bool:
+    playground_copy = playground.copy()
+    for piece, piece_coordinates in zip(pieces, pieces_coordinates):
+        piece_dest = get_piece_dest(playground_copy, piece, piece_coordinates)
+        if (piece_dest * piece).max() != 0: return False
+        piece_dest[:] = piece
+    return True
 
-    return (piece_dest * piece).max() == 0
 
-
-def insert_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D) -> None:
-    piece_dest = get_piece_dest(playground, piece, piece_coordinates)
-
-    piece_dest += piece
+def insert_pieces(playground: Array3D, pieces: list[Array3D], piece_coordinates: Array2D) -> None:
+    for piece, piece_coordinates in zip(pieces, piece_coordinates):
+        piece_dest = get_piece_dest(playground, piece, piece_coordinates)
+        piece_dest += piece
 
 
 def print_playground(playground) -> None:
     print()
-    for array in playground:
-        for row in array:
+    for layer in playground:
+        for row in layer:
             print(row)
         print()
 
@@ -167,15 +54,26 @@ def remove_piece(playground: Array3D, piece: Array3D, piece_coordinates: Array1D
     piece_dest -= piece
 
 
-def get_neighbour_positions(piece_coordinates: Array1D) -> list[Array1D]:
-    for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
-        yield piece_coordinates + offset
+def get_neighbour_positions(pieces_coordinates: Array2D) -> list[Array2D]:
+    for piece_index in range(len(pieces_coordinates)):
+        for offset in ([0, 0, 1], [0, 0, -1], [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0]):
+            neighbour_coordinates = pieces_coordinates[piece_index] + offset
+            if min(neighbour_coordinates) < 0:
+                continue
+            if max(neighbour_coordinates[:2]) > 4 or neighbour_coordinates[2] > 6:
+                continue
+            neighbouring_coordinates = pieces_coordinates.copy()
+            neighbouring_coordinates[piece_index] = neighbour_coordinates
+            yield neighbouring_coordinates
 
 
 def print_path(node: SearchNode):
     print("Path: ", end="")
     path = get_path_rec(node)
-    print(", ".join(map(str, path)))
+    if len(path) <= 10:
+        print(", ".join(map(str, path)))
+    else:
+        print("\n  ", "\n  ".join(map(str, path)))
 
 
 def get_path_rec(node: SearchNode) -> list[Array1D]:
@@ -186,9 +84,12 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
     return path
 
 
-def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) -> float:
-    return abs(piece_coords1[0] - piece_coords2[0]) + abs(piece_coords1[1] - piece_coords2[1]) + abs(piece_coords1[2] -
-                                                                                                     piece_coords2[2])
+def calc_lower_bound_distance(pieces_coords1: list[Array2D], pieces_coords2: list[Array2D]) -> float:
+    return sum(np.sum(np.abs(piece_coords1 - piece_coords2)) for piece_coords1,piece_coords2 in zip(pieces_coords1,pieces_coords2))
+
+
+def freeze(mat: Array2D) -> tuple[tuple[float]]:
+    return tuple(tuple(row) for row in mat)
 
 
 def generate_json(node: SearchNode):
@@ -214,35 +115,37 @@ def generate_json(node: SearchNode):
 
 def move_piece_through_maze(
         playground: Array3D,
-        piece: Array3D,
-        piece_start: Array1D,
-        piece_goal: Array1D,
+        pieces: list[Array3D],
+        piece_start: Array2D,
+        piece_goal: Array2D
 ) -> None:
     checked_coordinates = set()
 
     next_to_visit = []
 
     lower_bound_distance = calc_lower_bound_distance(piece_start, piece_goal)
-    heapq.heappush(next_to_visit, (SearchNode(piece_start, lower_bound_distance)))
+    heapq.heappush(next_to_visit, SearchNode(piece_start, lower_bound_distance))
 
+    searchNodeCnt = 0
     while len(next_to_visit) > 0:
         current_node = heapq.heappop(next_to_visit)
-        print(current_node)
+        searchNodeCnt += 1
+        print(f"\r{searchNodeCnt}: {current_node.length_estimate}, {len(next_to_visit)}", end='')
+        #print(current_node)
 
         if np.array_equal(current_node.coordinates, piece_goal):
-            insert_piece(playground, piece, current_node.coordinates)
-            print('Das Piece ist an der richtigen Stelle!', current_node)
-            print_playground(playground)
+            insert_pieces(playground, pieces, current_node.coordinates)
+            print('\nDas Piece ist an der richtigen Stelle!', current_node)
             print_path(current_node)
             generate_json(current_node)
             break
 
         for neighbour in get_neighbour_positions(current_node.coordinates):
-            if tuple(neighbour) not in checked_coordinates:
-                if is_valid_position(playground, piece, neighbour):
+            if freeze(neighbour) not in checked_coordinates:
+                if is_valid_position(playground, pieces, neighbour):
                     lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
                                                      + len(get_path_rec(current_node))
                     heapq.heappush(next_to_visit,
                                    SearchNode(neighbour, lower_bound_distance_neighbour, current_node)
                                    )
-        checked_coordinates.add(tuple(current_node.coordinates))
+        checked_coordinates.add(freeze(current_node.coordinates))
