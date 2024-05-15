@@ -1,0 +1,60 @@
+{
+  "pieces": [
+    {
+      "name": "piece1",
+      "coordinates": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      }
+    },
+    {
+      "name": "piece2",
+      "coordinates": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    },
+    {
+      "name": "piece3",
+      "coordinates": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "name": "piece4",
+      "coordinates": {
+        "x": 1,
+        "y": 0,
+        "z": 1
+      }
+    },
+    {
+      "name": "piece1",
+      "coordinates": {
+        "x": 0,
+        "y": 1,
+        "z": 1
+      }
+    },
+    {
+      "name": "piece2",
+      "coordinates": {
+        "x": 1,
+        "y": 1,
+        "z": 0
+      }
+    },
+    {
+      "name": "piece3",
+      "coordinates": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
+    }
+  ]
+}
