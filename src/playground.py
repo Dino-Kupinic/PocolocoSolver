@@ -1,7 +1,8 @@
+import heapq
+import json
 from typing import Final
 
 import numpy as np
-import heapq
 
 from src.model.SearchNode import SearchNode
 
@@ -190,6 +191,27 @@ def calc_lower_bound_distance(piece_coords1: Array1D, piece_coords2: Array1D) ->
                                                                                                      piece_coords2[2])
 
 
+def generate_json(node: SearchNode):
+    path = get_path_rec(node)
+    pieces = []
+    for index, coordinates in enumerate(path):
+        coordinates = list(coordinates)
+        piece = {
+            "name": "piece",
+            "coordinates": {
+                "x": int(coordinates[0]),
+                "y": int(coordinates[1]),
+                "z": int(coordinates[2])
+            }
+        }
+        pieces.append(piece)
+    output = {"pieces": pieces}
+    print('output')
+    print(output)
+    with open("sample.json", "w") as outfile:
+        json.dump(output, outfile)
+
+
 def move_piece_through_maze(
         playground: Array3D,
         piece: Array3D,
@@ -212,6 +234,7 @@ def move_piece_through_maze(
             print('Das Piece ist an der richtigen Stelle!', current_node)
             print_playground(playground)
             print_path(current_node)
+            generate_json(current_node)
             break
 
         for neighbour in get_neighbour_positions(current_node.coordinates):
