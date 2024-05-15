@@ -31,7 +31,7 @@ def is_valid_position(playground: Array3D, pieces: list[Array3D], pieces_coordin
     for piece, piece_coordinates in zip(pieces, pieces_coordinates):
         piece_dest = get_piece_dest(playground_copy, piece, piece_coordinates)
         if (piece_dest * piece).max() != 0: return False
-        piece_dest[:] = piece
+        piece_dest += piece
     return True
 
 
