@@ -27,9 +27,11 @@ def get_piece_dest(playground: Array3D, piece: Array3D, piece_coordinates: Array
 
 # this solution only delivers coordinates where there are only clear fields and doesn't take pieces into consideration
 def is_valid_position(playground: Array3D, pieces: list[Array3D], pieces_coordinates: Array2D) -> bool:
+    playground_copy = playground.copy()
     for piece, piece_coordinates in zip(pieces, pieces_coordinates):
-        piece_dest = get_piece_dest(playground, piece, piece_coordinates)
+        piece_dest = get_piece_dest(playground_copy, piece, piece_coordinates)
         if (piece_dest * piece).max() != 0: return False
+        piece_dest[:] = piece
     return True
 
 
@@ -68,7 +70,10 @@ def get_neighbour_positions(pieces_coordinates: Array2D) -> list[Array2D]:
 def print_path(node: SearchNode):
     print("Path: ", end="")
     path = get_path_rec(node)
-    print(", ".join(map(str, path)))
+    if len(path) <= 10:
+        print(", ".join(map(str, path)))
+    else:
+        print("\n  ", "\n  ".join(map(str, path)))
 
 
 def get_path_rec(node: SearchNode) -> list[Array1D]:
@@ -79,8 +84,8 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
     return path
 
 
-def calc_lower_bound_distance(piece_coords1: Array2D, piece_coords2: Array2D) -> float:
-    return np.sum(np.abs(piece_coords1 - piece_coords2))
+def calc_lower_bound_distance(pieces_coords1: list[Array2D], pieces_coords2: list[Array2D]) -> float:
+    return sum(np.sum(np.abs(piece_coords1 - piece_coords2)) for piece_coords1,piece_coords2 in zip(pieces_coords1,pieces_coords2))
 
 
 def freeze(mat: Array2D) -> tuple[tuple[float]]:
@@ -100,13 +105,16 @@ def move_piece_through_maze(
     lower_bound_distance = calc_lower_bound_distance(piece_start, piece_goal)
     heapq.heappush(next_to_visit, SearchNode(piece_start, lower_bound_distance))
 
+    searchNodeCnt = 0
     while len(next_to_visit) > 0:
         current_node = heapq.heappop(next_to_visit)
-        print(current_node)
+        searchNodeCnt += 1
+        print(f"\r{searchNodeCnt}: {current_node.length_estimate}, {len(next_to_visit)}", end='')
+        #print(current_node)
 
         if np.array_equal(current_node.coordinates, piece_goal):
             insert_pieces(playground, pieces, current_node.coordinates)
-            print('Das Piece ist an der richtigen Stelle!', current_node)
+            print('\nDas Piece ist an der richtigen Stelle!', current_node)
             print_path(current_node)
             break
 
