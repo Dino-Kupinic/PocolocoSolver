@@ -4,6 +4,13 @@ import json
 from src.model.SearchNode import SearchNode
 from shared.types import Array1D, Array2D, Array3D, np
 
+gui_offset = {
+    1: (-1, -1),
+    2: (-5, 1),
+    3: (1, -5),
+    4: (-3, -3)
+}
+
 
 def add_obstacles(playground: Array3D, obstacles: list[Array1D]):
     for obstacle in obstacles:
@@ -86,7 +93,8 @@ def get_path_rec(node: SearchNode) -> list[Array1D]:
 
 
 def calc_lower_bound_distance(pieces_coords1: list[Array2D], pieces_coords2: list[Array2D]) -> float:
-    return sum(np.sum(np.abs(piece_coords1 - piece_coords2)) for piece_coords1,piece_coords2 in zip(pieces_coords1,pieces_coords2))
+    return sum(np.sum(np.abs(piece_coords1 - piece_coords2)) for piece_coords1, piece_coords2 in
+               zip(pieces_coords1, pieces_coords2))
 
 
 def freeze(mat: Array2D) -> tuple[tuple[float]]:
@@ -94,20 +102,30 @@ def freeze(mat: Array2D) -> tuple[tuple[float]]:
 
 
 def generate_json(node: SearchNode):
-    path = list(reversed(get_path_rec(node)))
+    path = get_path_rec(node)
     pieces = []
     old = path[0]
+    for index, coords in enumerate(old, start=1):
+        piece = {
+            "name": f"piece{index}",
+            "coordinates": {
+                "x": int(coords[0] + gui_offset[index][0]),
+                "y": int(coords[1] + gui_offset[index][1]),
+                "z": 4 - int(coords[2])
+            }
+        }
+        pieces.append(piece)
     for coordinates in path[1:]:
-        for index, (coords_old, coords_new) in enumerate(zip(old, coordinates)):
+        for index, (coords_old, coords_new) in enumerate(zip(old, coordinates), start=1):
             if np.array_equal(coords_old, coords_new):
                 continue
 
             piece = {
-                "name": f"piece{index + 1}",
+                "name": f"piece{index}",
                 "coordinates": {
-                    "x": int(coords_new[0]),
-                    "y": int(coords_new[1]),
-                    "z": int(coords_new[2])
+                    "x": int(coords_new[0] + gui_offset[index][0]),
+                    "y": int(coords_new[1] + gui_offset[index][1]),
+                    "z": 4 - int(coords_new[2])
                 }
             }
             pieces.append(piece)
@@ -138,7 +156,7 @@ def move_piece_through_maze(
         current_node: SearchNode = heapq.heappop(next_to_visit)
         searchNodeCnt += 1
         print(f"\r{searchNodeCnt}: {current_node.length_estimate}, {len(next_to_visit)}", end='')
-        #print(current_node)
+        # print(current_node)
 
         if np.array_equal(current_node.coordinates, piece_goal):
             insert_pieces(playground, pieces, current_node.coordinates)

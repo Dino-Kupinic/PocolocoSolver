@@ -1,0 +1,36 @@
+{
+  "pieces": [
+    {
+      "name": "piece1",
+      "coordinates": {
+        "x": -1,
+        "y": -1,
+        "z": 4
+      }
+    },
+    {
+      "name": "piece2",
+      "coordinates": {
+        "x": 2,
+        "y": -2,
+        "z": 4
+      }
+    },
+    {
+      "name": "piece3",
+      "coordinates": {
+        "x": -2,
+        "y": 2,
+        "z": 4
+      }
+    },
+    {
+      "name": "piece4",
+      "coordinates": {
+        "x": 2,
+        "y": 2,
+        "z": 4
+      }
+    }
+  ]
+}
