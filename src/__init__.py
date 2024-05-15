@@ -99,8 +99,8 @@ def main():
     timestampStart = datetime.now()
     move_piece_through_maze(my_playground,
                             [piece1, piece2, piece3, piece4],
-                            [piece1_start, piece2_start, piece3_start, piece4_start],#[:3],
-                            [piece1_goal, piece2_goal, piece3_goal, piece4_goal]#[:3]
+                            [piece1_start, piece2_start, piece3_start, piece4_start][:2],
+                            [piece1_goal, piece2_goal, piece3_goal, piece4_goal][:2]
                             )
 
     sys.stdout.flush()

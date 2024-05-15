@@ -1,4 +1,5 @@
 import heapq
+import json
 
 from src.model.SearchNode import SearchNode
 from shared.types import Array1D, Array2D, Array3D, np
@@ -95,17 +96,23 @@ def freeze(mat: Array2D) -> tuple[tuple[float]]:
 def generate_json(node: SearchNode):
     path = get_path_rec(node)
     pieces = []
-    for index, coordinates in enumerate(path):
-        coordinates = list(coordinates)
-        piece = {
-            "name": "piece",
-            "coordinates": {
-                "x": int(coordinates[0]),
-                "y": int(coordinates[1]),
-                "z": int(coordinates[2])
+    old = path[0]
+    for coordinates in path[1:]:
+        for index, (coords_old, coords_new) in enumerate(zip(old, coordinates)):
+            if np.array_equal(coords_old, coords_new):
+                continue
+
+            piece = {
+                "name": f"piece{index + 1}",
+                "coordinates": {
+                    "x": int(coords_new[0]),
+                    "y": int(coords_new[1]),
+                    "z": int(coords_new[2])
+                }
             }
-        }
-        pieces.append(piece)
+            pieces.append(piece)
+        old = coordinates
+
     output = {"pieces": pieces}
     print('output')
     print(output)
