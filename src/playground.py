@@ -121,7 +121,7 @@ def move_piece_through_maze(
         for neighbour in get_neighbour_positions(current_node.coordinates):
             if freeze(neighbour) not in checked_coordinates:
                 if is_valid_position(playground, pieces, neighbour):
-                    lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) \
+                    lower_bound_distance_neighbour = calc_lower_bound_distance(neighbour, piece_goal) * 1.01 \
                                                      + current_node.depth
                     heapq.heappush(next_to_visit,
                                    SearchNode(neighbour, lower_bound_distance_neighbour, current_node)
