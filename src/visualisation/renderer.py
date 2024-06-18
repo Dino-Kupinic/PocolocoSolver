@@ -221,10 +221,8 @@ def startSequence():
     global sequence_started
     if not sequence_started:
         cameraWarning.destroy()
-        #Sequence(*piece_intervals).start()
-        #Sequence.setPlayRate(0.2)
         sequence.start()
-        sequence.setPlayRate(0.2)
+        sequence.setPlayRate(0.5)
         sequence_started = True
 
 def calcCameraPosition():
@@ -243,19 +241,17 @@ def importPieces():
 
 def createIntervalPositions(piece_sequence, piece_mapping):
     piece_intervals = []
+    piece_positions = [mapping.get_pos() for mapping in piece_mapping]
 
-    for piece in piece_sequence:
+    for piece in reversed(piece_sequence):
         piece_name = piece['name']
         piece_coords = piece['coordinates']
-        match piece_name:
-            case 'piece1':
-                ip = piece_mapping[0].posInterval(1, (piece_coords['x'], piece_coords['y'], piece_coords['z']))
-            case 'piece2':
-                ip = piece_mapping[1].posInterval(1, (piece_coords['x'], piece_coords['y'], piece_coords['z']))
-            case 'piece3':
-                ip = piece_mapping[2].posInterval(1, (piece_coords['x'], piece_coords['y'], piece_coords['z']))
-            case 'piece4':
-                ip = piece_mapping[3].posInterval(1, (piece_coords['x'], piece_coords['y'], piece_coords['z']))
+
+        coords = (piece_coords['dx'], piece_coords['dy'], piece_coords['dz'])
+
+        piece_index = int(piece_name[-1]) - 1
+        piece_positions[piece_index] += coords
+        ip = piece_mapping[piece_index].posInterval(1, piece_positions[piece_index])
 
         piece_intervals.append(ip)
 
@@ -324,7 +320,7 @@ if __name__ == '__main__':
     piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1]) #Blau
 
     piece_sequence = importPieces()
-    piece_mapping = [piece1, piece2, piece3, piece4]
+    piece_mapping = [piece4, piece2, piece3, piece1]
     piece_intervals = createIntervalPositions(piece_sequence, piece_mapping)
 
     sequence = Sequence(*piece_intervals)
