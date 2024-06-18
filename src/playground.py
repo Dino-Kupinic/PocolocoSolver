@@ -1,5 +1,6 @@
 import heapq
 import json
+from src.shared.globals import *
 
 from src.model.SearchNode import SearchNode
 from shared.types import Array1D, Array2D, Array3D, np
@@ -96,6 +97,7 @@ def freeze(mat: Array2D) -> tuple[tuple[float]]:
 def generate_json(node: SearchNode):
     path = list(reversed(get_path_rec(node)))
     pieces = []
+    piecesPos = [piece1_start, piece2_start, piece3_start, piece4_start]
     old = path[0]
     for coordinates in path[1:]:
         for index, (coords_old, coords_new) in enumerate(zip(old, coordinates)):
@@ -105,18 +107,19 @@ def generate_json(node: SearchNode):
             piece = {
                 "name": f"piece{index + 1}",
                 "coordinates": {
-                    "x": int(coords_new[0]),
-                    "y": int(coords_new[1]),
-                    "z": int(coords_new[2])
+                    "dx": int(coords_new[0] - piecesPos[index][0]),
+                    "dy": int(coords_new[1] - piecesPos[index][1]),
+                    "dz": int(coords_new[2] - piecesPos[index][2])
                 }
             }
             pieces.append(piece)
+            piecesPos[index] = coords_new
         old = coordinates
 
     output = {"pieces": pieces}
     print('output')
     print(output)
-    with open("sample.json", "w") as outfile:
+    with open("SolutionPath.json", "w") as outfile:
         json.dump(output, outfile)
 
 
