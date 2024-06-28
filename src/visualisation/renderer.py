@@ -274,17 +274,17 @@ def buildBarrierBox(color):
             box = makeAABox((x + 5, y + 1, z), (x + 6, y + 2, z + 1))
             box.setColor(*color)
 
-    for y in range(2):
-        x = -1
+    for x in range(2):
+        y = -1
         z = -3
         box = makeAABox((x, y, z), (x + 1, y + 1, z + 1))
         box.setColor(*color)
-        box = makeAABox((x + 3, y, z), (x + 4, y + 1, z + 1))
+        box = makeAABox((x, y + 3, z), (x + 1, y + 4, z + 1))
         box.setColor(*color)
 
-    box = makeAABox((-1, 0, -2), (0, 1, -1))
+    box = makeAABox((0, -1, -2), (1, 0, -1))
     box.setColor(*color)
-    box = makeAABox((2, 1, -2), (3, 2, -1))
+    box = makeAABox((1, 2, -2), (2, 3, -1))
     box.setColor(*color)
 
 if __name__ == '__main__':
