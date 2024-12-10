@@ -54,6 +54,18 @@ def stepBackward():
     sequence.pause()
 
 
+def zoomIn():
+    global cam_r
+    cam_r = max(2, cam_r - 1)
+    calcCameraPosition()
+
+
+def zoomOut():
+    global cam_r
+    cam_r += 1
+    calcCameraPosition()
+
+
 # helper function for normalizing vector to length 1
 def normalized(*args):
     myVec = LVector3(*args)
@@ -344,7 +356,7 @@ if __name__ == '__main__':
     turn_speed = 0.07
     base.camLens.setFov(120)  # wide angle view
 
-    cameraWarning = OnscreenText(text="Please turn the camera!",
+    cameraWarning = OnscreenText(text="Please turn the camera! Hold arrows",
                                  style=1, fg=(1, 1, 1, 1), pos=(0, 0.8), scale=.12,
                                  align=TextNode.ACenter)
 
@@ -397,5 +409,16 @@ if __name__ == '__main__':
         text="<<", scale=0.1, pos=(-0.6, 0, -0.5),
         command=stepBackward, parent=base.a2dTopRight
     )
+
+    zoomInButton = DirectButton(
+        text="Zoom In", scale=0.07, pos=(-0.5, 0.5, -0.1),
+        command=zoomIn, parent=base.a2dTopRight
+    )
+
+    zoomOutButton = DirectButton(
+        text="Zoom Out", scale=0.07, pos=(-0.5, 0.5, -0.2),
+        command=zoomOut, parent=base.a2dTopRight
+    )
+
 
     base.run()
