@@ -12,6 +12,8 @@ from panda3d.core import LVector3
 from panda3d.core import RigidBodyCombiner, NodePath
 from panda3d.core import TextNode
 from panda3d.core import loadPrcFileData
+from direct.gui.DirectGui import DirectButton
+
 
 loadPrcFileData("", "fullscreen true")
 loadPrcFileData("", "win-origin 0 0")
@@ -19,6 +21,19 @@ loadPrcFileData("", "undecorated true")
 loadPrcFileData("", "win-size 1920 1080")
 
 sequence_started = False
+sequence_paused = False
+
+def toggleSequence():
+    global sequence_paused
+    if sequence_paused:
+        sequence.resume()
+    else:
+        sequence.pause()
+    sequence_paused = not sequence_paused
+
+
+
+
 
 # helper function for normalizing vector to length 1
 def normalized(*args):
@@ -330,5 +345,10 @@ if __name__ == '__main__':
     base.accept('arrow_up-repeat', moveCameraUp)
     base.accept('arrow_down-repeat', moveCameraDown)
     base.accept('escape', sys.exit)
+
+    pauseButton = DirectButton(
+        text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.5),
+        command=toggleSequence, parent=base.a2dTopRight
+    )
 
     base.run()
