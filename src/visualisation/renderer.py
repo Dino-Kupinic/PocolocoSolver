@@ -14,7 +14,6 @@ from panda3d.core import TextNode
 from panda3d.core import loadPrcFileData
 from direct.gui.DirectGui import DirectButton
 
-
 loadPrcFileData("", "fullscreen true")
 loadPrcFileData("", "win-origin 0 0")
 loadPrcFileData("", "undecorated true")
@@ -22,6 +21,7 @@ loadPrcFileData("", "win-size 1920 1080")
 
 sequence_started = False
 sequence_paused = False
+
 
 def toggleSequence():
     global sequence_paused
@@ -32,7 +32,12 @@ def toggleSequence():
     sequence_paused = not sequence_paused
 
 
-
+def resetSequence():
+    global sequence_paused
+    sequence.finish()  # Stop and reset the sequence to the beginning
+    sequence.pause()   # Ensure the sequence is paused
+    sequence.setT(0)   # Set the sequence's time to 0 (start)
+    sequence_paused = True
 
 
 # helper function for normalizing vector to length 1
@@ -40,6 +45,7 @@ def normalized(*args):
     myVec = LVector3(*args)
     myVec.normalize()
     return myVec
+
 
 # The purpose is to generate a basic structure for 3D geometry.
 def createGeometry():
@@ -71,7 +77,7 @@ def createGeomNode(geom):
     node = GeomNode('scene')
 
     # Unpacks the returned tuple from the geom argument
-    scene,_ = geom
+    scene, _ = geom
 
     # Adding the geom object to the geomnode
     node.addGeom(scene)
@@ -81,10 +87,12 @@ def createGeomNode(geom):
 
     return renderedNode
 
+
 def makeAABox(pMin, pMax):
     geom = createGeometry()
     addAABox(pMin, pMax, geom)
     return createGeomNode(geom)
+
 
 # Extends an existing geometry
 def addAABox(pMin, pMax, geom):
@@ -103,9 +111,9 @@ def addAABox(pMin, pMax, geom):
     for x in xRange:
         for y in yRange:
             for z in zRange:
-                #print(xRange, yRange, zRange)
+                # print(xRange, yRange, zRange)
                 vertex.addData3(x, y, z)
-                normal.addData3(normalized(x-xMid, y-yMid, z-zMid))
+                normal.addData3(normalized(x - xMid, y - yMid, z - zMid))
 
     #   5---7
     #  /|  /|
@@ -124,13 +132,13 @@ def addAABox(pMin, pMax, geom):
     )
 
     # Generate triangle indices for each face
-    triangleIdcsPerFace = (((p1, p4, p2), (p2, p4, p3)) for p1, p2,  p3, p4 in faceIdcs)
-    triangleIdcs = sum(triangleIdcsPerFace, ()) #flatten tuple
+    triangleIdcsPerFace = (((p1, p4, p2), (p2, p4, p3)) for p1, p2, p3, p4 in faceIdcs)
+    triangleIdcs = sum(triangleIdcsPerFace, ())  # flatten tuple
 
     # Create geomtriangles for the bounding box
     tris = GeomTriangles(Geom.UHStatic)
     for i1, i2, i3 in triangleIdcs:
-        tris.addVertices(vertCnt+i1, vertCnt+i2, vertCnt+i3)
+        tris.addVertices(vertCnt + i1, vertCnt + i2, vertCnt + i3)
 
     # Add the geomtriangles to the existing geometry
     scene.addPrimitive(tris)
@@ -154,7 +162,7 @@ def addPointLight(pos, intensity=1):
     render.setLight(pLightNP)
 
 
-#def buildPieces(startingPoint, color):
+# def buildPieces(startingPoint, color):
 def buildPieces(piecePosition, bridgePosition, color):
     block = RigidBodyCombiner("block")
     blocknp = NodePath(block)
@@ -165,21 +173,21 @@ def buildPieces(piecePosition, bridgePosition, color):
     bridge_x = bridgePosition[0]
     bridge_y = bridgePosition[1]
 
-    #top part
-    box = makeAABox((-1 + x_offset,-1 + y_offset,-1),(0 + x_offset,0 + y_offset,0))
+    # top part
+    box = makeAABox((-1 + x_offset, -1 + y_offset, -1), (0 + x_offset, 0 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset,-1 + y_offset,-1),(1 + x_offset,0 + y_offset,0))
+    box = makeAABox((0 + x_offset, -1 + y_offset, -1), (1 + x_offset, 0 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((-1 + x_offset, 0 + y_offset, -1), (0 + x_offset,1 + y_offset,0))
+    box = makeAABox((-1 + x_offset, 0 + y_offset, -1), (0 + x_offset, 1 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset, 0 + y_offset, -1), (1 + x_offset, 1 + y_offset,0))
+    box = makeAABox((0 + x_offset, 0 + y_offset, -1), (1 + x_offset, 1 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
 
-    #bridge part
+    # bridge part
     box = makeAABox((-1 + x_offset + bridge_x, -1 + y_offset + bridge_y, -2), (0 + x_offset, 0 + y_offset, -1))
     box.setColor(*color)
     box.reparentTo(blocknp)
@@ -187,7 +195,7 @@ def buildPieces(piecePosition, bridgePosition, color):
     box.setColor(*color)
     box.reparentTo(blocknp)
 
-    #bottom part
+    # bottom part
     box = makeAABox((-1 + x_offset, -1 + y_offset, -4), (0 + x_offset, 0 + y_offset, -3))
     box.setColor(*color)
     box.reparentTo(blocknp)
@@ -204,11 +212,13 @@ def buildPieces(piecePosition, bridgePosition, color):
     block.collect()
     return blocknp
 
+
 def moveCameraRight():
     global cam_alpha
     cam_alpha += turn_speed
     calcCameraPosition()
     startSequence()
+
 
 def moveCameraLeft():
     global cam_alpha
@@ -216,21 +226,24 @@ def moveCameraLeft():
     calcCameraPosition()
     startSequence()
 
+
 def moveCameraUp():
     global cam_beta
     cam_beta += turn_speed
-    if cam_beta > PI/2:
-        cam_beta = PI/2 - 0.05
+    if cam_beta > PI / 2:
+        cam_beta = PI / 2 - 0.05
     calcCameraPosition()
     startSequence()
+
 
 def moveCameraDown():
     global cam_beta
     cam_beta -= turn_speed
-    if cam_beta < -PI/2:
-        cam_beta = -PI/2 + 0.05
+    if cam_beta < -PI / 2:
+        cam_beta = -PI / 2 + 0.05
     calcCameraPosition()
     startSequence()
+
 
 def startSequence():
     global sequence_started
@@ -240,6 +253,7 @@ def startSequence():
         sequence.setPlayRate(0.5)
         sequence_started = True
 
+
 def calcCameraPosition():
     cam_x = cam_r * cos(cam_alpha) * cos(cam_beta)
     cam_y = cam_r * sin(cam_alpha) * cos(cam_beta)
@@ -247,12 +261,14 @@ def calcCameraPosition():
     base.camera.setPos(cam_x, cam_y, cam_z)
     base.camera.lookAt(0, 0, 0)
 
+
 def importPieces():
     f = open('pieces.json')
     data = json.load(f)
     f.close()
 
     return data['pieces']
+
 
 def createIntervalPositions(piece_sequence, piece_mapping):
     piece_intervals = []
@@ -271,6 +287,7 @@ def createIntervalPositions(piece_sequence, piece_mapping):
         piece_intervals.append(ip)
 
     return piece_intervals
+
 
 def buildBarrierBox(color):
     for x in range(-2, 4):
@@ -302,6 +319,7 @@ def buildBarrierBox(color):
     box = makeAABox((1, 2, -2), (2, 3, -1))
     box.setColor(*color)
 
+
 if __name__ == '__main__':
     base = ShowBase()
     base.disableMouse()
@@ -310,29 +328,29 @@ if __name__ == '__main__':
     cam_beta = 0
     cam_r = 10
     turn_speed = 0.07
-    base.camLens.setFov(120) #wide angle view
+    base.camLens.setFov(120)  # wide angle view
 
     cameraWarning = OnscreenText(text="Please turn the camera!",
-        style=1, fg=(1, 1, 1, 1), pos=(0, 0.8), scale=.12,
-        align=TextNode.ACenter)
+                                 style=1, fg=(1, 1, 1, 1), pos=(0, 0.8), scale=.12,
+                                 align=TextNode.ACenter)
 
     nameText = OnscreenText(text="PocolocoSolver",
-        style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07,
-        parent=base.a2dBottomRight, align=TextNode.ARight)
+                            style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07,
+                            parent=base.a2dBottomRight, align=TextNode.ARight)
 
     exitText = OnscreenText(text="Press ESC to exit",
-        style=1, fg=(1, 1, 1, 1), pos=(0.1, 0.1), scale=.07,
-        parent=base.a2dBottomLeft, align=TextNode.ALeft)
+                            style=1, fg=(1, 1, 1, 1), pos=(0.1, 0.1), scale=.07,
+                            parent=base.a2dBottomLeft, align=TextNode.ALeft)
 
     addAmbientLight()
     addPointLight((-2, -4, 0))
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
-    piece1 = buildPieces([0, 0], [0, 0], [1, 0, 0, 1]) #Rot
-    piece2 = buildPieces([0, 2], [0, 2], [1, 1, 0, 1]) #Gelb
-    piece3 = buildPieces([2, 0], [2, 0], [0, 1, 0, 1]) #Grün
-    piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1]) #Blau
+    piece1 = buildPieces([0, 0], [0, 0], [1, 0, 0, 1])  # Rot
+    piece2 = buildPieces([0, 2], [0, 2], [1, 1, 0, 1])  # Gelb
+    piece3 = buildPieces([2, 0], [2, 0], [0, 1, 0, 1])  # Grün
+    piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1])  # Blau
 
     piece_sequence = importPieces()
     piece_mapping = [piece4, piece2, piece3, piece1]
@@ -349,6 +367,10 @@ if __name__ == '__main__':
     pauseButton = DirectButton(
         text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.5),
         command=toggleSequence, parent=base.a2dTopRight
+    )
+    resetButton = DirectButton(
+        text="Reset", scale=0.07, pos=(-0.5, 0.5, -0.7),
+        command=resetSequence, parent=base.a2dTopRight
     )
 
     base.run()
