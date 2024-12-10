@@ -34,10 +34,24 @@ def toggleSequence():
 
 def resetSequence():
     global sequence_paused
-    sequence.finish()  # Stop and reset the sequence to the beginning
-    sequence.pause()   # Ensure the sequence is paused
-    sequence.setT(0)   # Set the sequence's time to 0 (start)
+    sequence.finish()
+    sequence.pause()
+    sequence.setT(0)
     sequence_paused = True
+
+
+def stepForward():
+    current_time = sequence.getT()
+    new_time = min(sequence.getDuration(), current_time + 1)
+    sequence.setT(new_time)
+    sequence.pause()
+
+
+def stepBackward():
+    current_time = sequence.getT()
+    new_time = max(0, current_time - 1)
+    sequence.setT(new_time)
+    sequence.pause()
 
 
 # helper function for normalizing vector to length 1
@@ -365,12 +379,23 @@ if __name__ == '__main__':
     base.accept('escape', sys.exit)
 
     pauseButton = DirectButton(
-        text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.5),
+        text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.4),
         command=toggleSequence, parent=base.a2dTopRight
     )
+
     resetButton = DirectButton(
-        text="Reset", scale=0.07, pos=(-0.5, 0.5, -0.7),
+        text="Reset", scale=0.07, pos=(-0.5, 0.5, -0.3),
         command=resetSequence, parent=base.a2dTopRight
+    )
+
+    forwardButton = DirectButton(
+        text=">>", scale=0.1, pos=(-0.4, 0, -0.5),
+        command=stepForward, parent=base.a2dTopRight
+    )
+
+    backwardButton = DirectButton(
+        text="<<", scale=0.1, pos=(-0.6, 0, -0.5),
+        command=stepBackward, parent=base.a2dTopRight
     )
 
     base.run()
