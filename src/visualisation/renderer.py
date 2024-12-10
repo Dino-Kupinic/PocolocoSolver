@@ -13,6 +13,8 @@ from panda3d.core import RigidBodyCombiner, NodePath
 from panda3d.core import TextNode
 from panda3d.core import loadPrcFileData
 from direct.gui.DirectGui import DirectButton
+from direct.gui.DirectGui import DirectSlider
+
 
 loadPrcFileData("", "fullscreen true")
 loadPrcFileData("", "win-origin 0 0")
@@ -64,6 +66,21 @@ def zoomOut():
     global cam_r
     cam_r += 1
     calcCameraPosition()
+
+
+def adjustSpeed():
+    speed = speedSlider['value']
+    sequence.setPlayRate(speed)
+
+
+speedSlider = DirectSlider(
+    range=(0.1, 2.0),
+    value=1.0,
+    pageSize=0.1,
+    scale=0.4,
+    pos=(0, 0, -0.8),
+    command=adjustSpeed
+)
 
 
 # helper function for normalizing vector to length 1
@@ -420,5 +437,9 @@ if __name__ == '__main__':
         command=zoomOut, parent=base.a2dTopRight
     )
 
+    speedLabel = OnscreenText(
+        text="Sequence Speed", pos=(0, 0.1), scale=0.07, fg=(1, 1, 1, 1),
+        align=TextNode.ACenter, parent=base.a2dBottomCenter
+    )
 
     base.run()
