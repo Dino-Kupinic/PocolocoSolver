@@ -13,6 +13,9 @@ from panda3d.core import LVector3
 from panda3d.core import RigidBodyCombiner, NodePath
 from panda3d.core import TextNode
 from panda3d.core import loadPrcFileData
+from direct.gui.DirectGui import DirectButton
+from direct.gui.DirectGui import DirectSlider
+
 
 from direct.task.TaskManagerGlobal import taskMgr
 from direct.showbase.ShowBaseGlobal import globalClock
@@ -25,6 +28,66 @@ loadPrcFileData("", "undecorated true")
 loadPrcFileData("", "win-size 1920 1080")
 
 sequence_started = False
+sequence_paused = False
+
+
+def toggleSequence():
+    global sequence_paused
+    if sequence_paused:
+        sequence.resume()
+    else:
+        sequence.pause()
+    sequence_paused = not sequence_paused
+
+
+def resetSequence():
+    global sequence_paused
+    sequence.finish()
+    sequence.pause()
+    sequence.setT(0)
+    sequence_paused = True
+
+
+def stepForward():
+    current_time = sequence.getT()
+    new_time = min(sequence.getDuration(), current_time + 1)
+    sequence.setT(new_time)
+    sequence.pause()
+
+
+def stepBackward():
+    current_time = sequence.getT()
+    new_time = max(0, current_time - 1)
+    sequence.setT(new_time)
+    sequence.pause()
+
+
+def zoomIn():
+    global cam_r
+    cam_r = max(2, cam_r - 1)
+    calcCameraPosition()
+
+
+def zoomOut():
+    global cam_r
+    cam_r += 1
+    calcCameraPosition()
+
+
+def adjustSpeed():
+    speed = speedSlider['value']
+    sequence.setPlayRate(speed)
+
+
+speedSlider = DirectSlider(
+    range=(0.1, 2.0),
+    value=1.0,
+    pageSize=0.1,
+    scale=0.4,
+    pos=(0, 0, -0.8),
+    command=adjustSpeed
+)
+
 
 cam_alpha = 0
 cam_beta = 0
@@ -106,9 +169,9 @@ def addAABox(pMin, pMax, geom):
     for x in xRange:
         for y in yRange:
             for z in zRange:
-                #print(xRange, yRange, zRange)
+                # print(xRange, yRange, zRange)
                 vertex.addData3(x, y, z)
-                normal.addData3(normalized(x-xMid, y-yMid, z-zMid))
+                normal.addData3(normalized(x - xMid, y - yMid, z - zMid))
 
     #   5---7
     #  /|  /|
@@ -127,13 +190,13 @@ def addAABox(pMin, pMax, geom):
     )
 
     # Generate triangle indices for each face
-    triangleIdcsPerFace = (((p1, p4, p2), (p2, p4, p3)) for p1, p2,  p3, p4 in faceIdcs)
-    triangleIdcs = sum(triangleIdcsPerFace, ()) #flatten tuple
+    triangleIdcsPerFace = (((p1, p4, p2), (p2, p4, p3)) for p1, p2, p3, p4 in faceIdcs)
+    triangleIdcs = sum(triangleIdcsPerFace, ())  # flatten tuple
 
     # Create geomtriangles for the bounding box
     tris = GeomTriangles(Geom.UHStatic)
     for i1, i2, i3 in triangleIdcs:
-        tris.addVertices(vertCnt+i1, vertCnt+i2, vertCnt+i3)
+        tris.addVertices(vertCnt + i1, vertCnt + i2, vertCnt + i3)
 
     # Add the geomtriangles to the existing geometry
     scene.addPrimitive(tris)
@@ -326,9 +389,9 @@ if __name__ == '__main__':
 
     base.camLens.setFov(100) #wide angle view (usually 120 for debugging)
 
-    cameraWarning = OnscreenText(text="Please turn the camera!",
-        style=1, fg=(1, 1, 1, 1), pos=(0, 0.8), scale=.12,
-        align=TextNode.ACenter)
+    cameraWarning = OnscreenText(text="Please turn the camera! Hold arrows",
+                                 style=1, fg=(1, 1, 1, 1), pos=(0, 0.8), scale=.12,
+                                 align=TextNode.ACenter)
 
     nameText = OnscreenText(text="PocolocoSolver",
         style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07,
@@ -343,10 +406,10 @@ if __name__ == '__main__':
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
-    piece1 = buildPieces([0, 0], [0, 0], [1, 0, 0, 1]) #Rot
-    piece2 = buildPieces([0, 2], [0, 2], [1, 1, 0, 1]) #Gelb
-    piece3 = buildPieces([2, 0], [2, 0], [0, 1, 0, 1]) #Grün
-    piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1]) #Blau
+    piece1 = buildPieces([0, 0], [0, 0], [1, 0, 0, 1])  # Rot
+    piece2 = buildPieces([0, 2], [0, 2], [1, 1, 0, 1])  # Gelb
+    piece3 = buildPieces([2, 0], [2, 0], [0, 1, 0, 1])  # Grün
+    piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1])  # Blau
 
     piece_sequence = importPieces()
     piece_mapping = [piece4, piece2, piece3, piece1]
@@ -365,8 +428,43 @@ if __name__ == '__main__':
     base.accept('arrow_down-up', releaseKey, ["lookDown"])
     base.accept('escape', sys.exit)
 
+    # runs the application
+    pauseButton = DirectButton(
+        text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.4),
+        command=toggleSequence, parent=base.a2dTopRight
+    )
+
+    resetButton = DirectButton(
+        text="Reset", scale=0.07, pos=(-0.5, 0.5, -0.3),
+        command=resetSequence, parent=base.a2dTopRight
+    )
+
+    forwardButton = DirectButton(
+        text=">>", scale=0.1, pos=(-0.4, 0, -0.5),
+        command=stepForward, parent=base.a2dTopRight
+    )
+
+    backwardButton = DirectButton(
+        text="<<", scale=0.1, pos=(-0.6, 0, -0.5),
+        command=stepBackward, parent=base.a2dTopRight
+    )
+
+    zoomInButton = DirectButton(
+        text="Zoom In", scale=0.07, pos=(-0.5, 0.5, -0.1),
+        command=zoomIn, parent=base.a2dTopRight
+    )
+
+    zoomOutButton = DirectButton(
+        text="Zoom Out", scale=0.07, pos=(-0.5, 0.5, -0.2),
+        command=zoomOut, parent=base.a2dTopRight
+    )
+
+    speedLabel = OnscreenText(
+        text="Sequence Speed", pos=(0, 0.1), scale=0.07, fg=(1, 1, 1, 1),
+        align=TextNode.ACenter, parent=base.a2dBottomCenter
+    )
+
     # starts the camera detection
     taskMgr.add(updateCamera, "updateCameraTask")
 
-    # runs the application
     base.run()
