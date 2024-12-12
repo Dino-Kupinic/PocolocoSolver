@@ -163,8 +163,7 @@ def addAABox(corner1, corner2, geom):
 
     # Calculate the midpoint, coordinate ranges and side lengths of the bounding box
     ranges = tuple(zip(pMin, pMax))
-    xMid, yMid, zMid = pMid = [0.5 * sum(range) for range in ranges]
-    xRange, yRange, zRange = ranges
+    pMid = [0.5 * sum(range) for range in ranges]
     lengths = [cMax - cMin for cMin,cMax in ranges]
 
     # Add vertices and normals to create the 6 faces of the bounding box
