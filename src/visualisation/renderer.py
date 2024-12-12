@@ -90,8 +90,8 @@ speedSlider = DirectSlider(
 
 
 cam_alpha = 0
-cam_beta = 0
-cam_r = 10
+cam_beta = 0.5
+cam_r = 15
 turn_speed = 1.5
 
 key_states = {
@@ -395,6 +395,7 @@ if __name__ == '__main__':
 
     addAmbientLight()
     addPointLight((-3, -4, 2))
+    calcCameraPosition()
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
