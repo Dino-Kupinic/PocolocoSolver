@@ -395,7 +395,7 @@ if __name__ == '__main__':
         parent=base.a2dBottomLeft, align=TextNode.ALeft)
 
     addAmbientLight()
-    addPointLight((-2, -4, 0))
+    addPointLight((-3, -4, 2))
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
