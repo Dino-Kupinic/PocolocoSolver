@@ -152,53 +152,45 @@ def makeAABox(pMin, pMax):
     addAABox(pMin, pMax, geom)
     return createGeomNode(geom)
 
-# Extends an existing geometry
-def addAABox(pMin, pMax, geom):
+# Extends an existing geometry with an axex aligned box
+# corner1 and corner 2 must be opposite corners
+def addAABox(corner1, corner2, geom):
+    # get corners with minimal and maximal coordinates, resp.
+    pMin,pMax = zip(*[(min(c1,c2),max(c1,c2)) for c1,c2 in zip(corner1,corner2)])
     # Unpack the geometry tuple into scene and the vertex/normal writers
     scene, (vertex, normal) = geom
-
-    # Get number of vertices in the existing geometry
-    vertCnt = vertex.getVertexData().get_num_rows()
-
-    # Calculate the midpoint and ranges of the bounding box
-    ranges = tuple(zip(pMin, pMax))
-    xMid, yMid, zMid = [0.5 * sum(range) for range in ranges]
-    xRange, yRange, zRange = ranges
-
-    # Add vertices and normals to create the bounding box
-    for x in xRange:
-        for y in yRange:
-            for z in zRange:
-                # print(xRange, yRange, zRange)
-                vertex.addData3(x, y, z)
-                normal.addData3(normalized(x - xMid, y - yMid, z - zMid))
-
-    #   5---7
-    #  /|  /|
-    # 1---3 |
-    # | 4-|-6
-    # |/  |/
-    # 0---2
-    # Define indices for creating the box faces
-    faceIdcs = (
-        (0, 2, 3, 1),
-        (2, 6, 7, 3),
-        (6, 4, 5, 7),
-        (4, 0, 1, 5),
-        (0, 4, 6, 2),
-        (1, 3, 7, 5)
-    )
-
-    # Generate triangle indices for each face
-    triangleIdcsPerFace = (((p1, p4, p2), (p2, p4, p3)) for p1, p2, p3, p4 in faceIdcs)
-    triangleIdcs = sum(triangleIdcsPerFace, ())  # flatten tuple
-
-    # Create geomtriangles for the bounding box
     tris = GeomTriangles(Geom.UHStatic)
-    for i1, i2, i3 in triangleIdcs:
-        tris.addVertices(vertCnt + i1, vertCnt + i2, vertCnt + i3)
 
-    # Add the geomtriangles to the existing geometry
+    # Calculate the midpoint, coordinate ranges and side lengths of the bounding box
+    ranges = tuple(zip(pMin, pMax))
+    pMid = [0.5 * sum(range) for range in ranges]
+    lengths = [cMax - cMin for cMin,cMax in ranges]
+
+    # Add vertices and normals to create the 6 faces of the bounding box
+    for axis_idx in range(3): # x,y,z
+        for axis_orient in (-1, 1):
+            face_normal = [0, 0, 0]
+            face_normal[axis_idx] = axis_orient
+            vec_normal_2 = face_normal[-axis_orient:] + face_normal[:-axis_orient]
+            vec_normal_3 = face_normal[axis_orient:] + face_normal[:axis_orient]
+            face_center = [cMid + c_normal * lengths[axis_idx]/2 for cMid, c_normal in zip(pMid, face_normal)]
+            # first corner of face
+            face_start = [face_center[i] - vec_normal_2[i] * lengths[(axis_idx+1)%3] / 2 - vec_normal_3[i] * lengths[(axis_idx+2)%3] / 2
+                          for i in range(3)]
+            # Get number of vertices in the existing geometry
+            vertCnt = vertex.getVertexData().get_num_rows()
+            # add 4 corners of the face
+            for corner_idx in range(4):
+                corner = [face_start[i] +
+                          ((corner_idx+1)%4//2) * vec_normal_2[i] * lengths[(axis_idx+1)%3] +
+                          (corner_idx//2)       * vec_normal_3[i] * lengths[(axis_idx+2)%3] for i in range(3)]
+                vertex.addData3(*corner)
+                normal.addData3(*face_normal)
+            # add two triangles for this face
+            tris.addVertices(vertCnt, vertCnt + 1, vertCnt + 2)
+            tris.addVertices(vertCnt, vertCnt + 2, vertCnt + 3)
+
+    # Add all (12) triangles of the box to the existing geometry
     scene.addPrimitive(tris)
 
 
@@ -402,7 +394,7 @@ if __name__ == '__main__':
         parent=base.a2dBottomLeft, align=TextNode.ALeft)
 
     addAmbientLight()
-    addPointLight((-2, -4, 0))
+    addPointLight((-3, -4, 2))
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
