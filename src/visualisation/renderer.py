@@ -271,6 +271,7 @@ def createIntervalPositions(piece_sequence, piece_mapping):
         piece_coords = piece['coordinates']
 
         coords = (piece_coords['dx'], piece_coords['dy'], piece_coords['dz'])
+        #coords = (piece_coords['x'], piece_coords['y'], piece_coords['z'])
 
         piece_index = int(piece_name[-1]) - 1
         piece_positions[piece_index] += coords
