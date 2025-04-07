@@ -65,13 +65,13 @@ def stepBackward():
 def zoomIn():
     global cam_r
     cam_r = max(2, cam_r - 1)
-    calcCameraPosition()
+    calc_camera_position()
 
 
 def zoomOut():
     global cam_r
     cam_r += 1
-    calcCameraPosition()
+    calc_camera_position()
 
 
 def adjustSpeed():
@@ -101,56 +101,31 @@ key_states = {
     "lookDown": False
 }
 
-# helper function for normalizing vector to length 1
 def normalized(*args):
-    myVec = LVector3(*args)
-    myVec.normalize()
-    return myVec
+    vec = LVector3(*args)
+    vec.normalize()
+    return vec
 
-# The purpose is to generate a basic structure for 3D geometry.
-def createGeometry():
-    # A vertex is a data point that defines a point in 3D space. It contains a  position (x/y/z) and a color.
-
-    # This creates the format for a vertex, with positions and normals.
+def create_geometry():
     format = GeomVertexFormat.getV3n3()
-    # Creates a container for vertex data, named piece, using the specified format and a hint "UHStatic",
-    #   indicating that the data won't change frequently.
     vdata = GeomVertexData('piece', format, Geom.UHStatic)
-
-    # Two instances, vertex and normal, are created.
-    # They are used to write data into the vdata.
     vertex = GeomVertexWriter(vdata, 'vertex')
     normal = GeomVertexWriter(vdata, 'normal')
-
-    # Is created with the GeomVertexData (vdata) to form a geometry container (scene)
-    # This geometry can later be added to a node for rendering
     scene = Geom(vdata)
 
     return scene, (vertex, normal)
 
 
-# The purpose is to take a geom object, encapsulate it within a geomnode named scene,
-# then attach this geomnode to the rendernode and return a nodepath to the rendered geometry.
-# This function is a convenient way to organize/integrate geometry into a Panda3D scene.
-def createGeomNode(geom):
-    # Creates a geomnode named scene
+def create_geom_node(geom):
     node = GeomNode('scene')
-
-    # Unpacks the returned tuple from the geom argument
     scene,_ = geom
-
-    # Adding the geom object to the geomnode
     node.addGeom(scene)
+    return render.attachNewNode(node)
 
-    # Creates a nodepath by attaching the geomnode to the render node
-    renderedNode = render.attachNewNode(node)
-
-    return renderedNode
-
-def makeAABox(pMin, pMax):
-    geom = createGeometry()
+def make_box(pMin, pMax):
+    geom = create_geometry()
     addAABox(pMin, pMax, geom)
-    return createGeomNode(geom)
+    return create_geom_node(geom)
 
 # Extends an existing geometry with an axex aligned box
 # corner1 and corner 2 must be opposite corners
@@ -194,15 +169,15 @@ def addAABox(corner1, corner2, geom):
     scene.addPrimitive(tris)
 
 
-def addAmbientLight(intensity=0.5):
-    aLight = AmbientLight('ambientLight')
-    aLightColor = tuple(3 * [intensity] + [1])
-    aLight.setColor(aLightColor)
-    aLightNP = render.attachNewNode(aLight)
-    render.setLight(aLightNP)
+def add_ambient_light(intensity=0.5):
+    light = AmbientLight('ambientLight')
+    light_color = tuple(3 * [intensity] + [1])
+    light.setColor(light_color)
+    light_np = render.attachNewNode(light)
+    render.setLight(light_np)
 
 
-def addPointLight(pos, intensity=1):
+def add_point_light(pos, intensity=1):
     pLight = PointLight('plight')
     pLightColor = tuple(3 * [intensity] + [1])
     pLight.setColor(pLightColor)
@@ -224,38 +199,38 @@ def buildPieces(piecePosition, bridgePosition, color):
     bridge_y = bridgePosition[1]
 
     #top part
-    box = makeAABox((-1 + x_offset,-1 + y_offset,-1),(0 + x_offset,0 + y_offset,0))
+    box = make_box((-1 + x_offset, -1 + y_offset, -1), (0 + x_offset, 0 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset,-1 + y_offset,-1),(1 + x_offset,0 + y_offset,0))
+    box = make_box((0 + x_offset, -1 + y_offset, -1), (1 + x_offset, 0 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((-1 + x_offset, 0 + y_offset, -1), (0 + x_offset,1 + y_offset,0))
+    box = make_box((-1 + x_offset, 0 + y_offset, -1), (0 + x_offset, 1 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset, 0 + y_offset, -1), (1 + x_offset, 1 + y_offset,0))
+    box = make_box((0 + x_offset, 0 + y_offset, -1), (1 + x_offset, 1 + y_offset, 0))
     box.setColor(*color)
     box.reparentTo(blocknp)
 
     #bridge part
-    box = makeAABox((-1 + x_offset + bridge_x, -1 + y_offset + bridge_y, -2), (0 + x_offset, 0 + y_offset, -1))
+    box = make_box((-1 + x_offset + bridge_x, -1 + y_offset + bridge_y, -2), (0 + x_offset, 0 + y_offset, -1))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((-1 + x_offset + bridge_x, -1 + y_offset + bridge_y, -3), (0 + x_offset, 0 + y_offset, -2))
+    box = make_box((-1 + x_offset + bridge_x, -1 + y_offset + bridge_y, -3), (0 + x_offset, 0 + y_offset, -2))
     box.setColor(*color)
     box.reparentTo(blocknp)
 
     #bottom part
-    box = makeAABox((-1 + x_offset, -1 + y_offset, -4), (0 + x_offset, 0 + y_offset, -3))
+    box = make_box((-1 + x_offset, -1 + y_offset, -4), (0 + x_offset, 0 + y_offset, -3))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset, -1 + y_offset, -4), (1 + x_offset, 0 + y_offset, -3))
+    box = make_box((0 + x_offset, -1 + y_offset, -4), (1 + x_offset, 0 + y_offset, -3))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((-1 + x_offset, 0 + y_offset, -4), (0 + x_offset, 1 + y_offset, -3))
+    box = make_box((-1 + x_offset, 0 + y_offset, -4), (0 + x_offset, 1 + y_offset, -3))
     box.setColor(*color)
     box.reparentTo(blocknp)
-    box = makeAABox((0 + x_offset, 0 + y_offset, -4), (1 + x_offset, 1 + y_offset, -3))
+    box = make_box((0 + x_offset, 0 + y_offset, -4), (1 + x_offset, 1 + y_offset, -3))
     box.setColor(*color)
     box.reparentTo(blocknp)
 
@@ -285,33 +260,33 @@ def buildBarrierBox(color):
     for x in range(-2, 4):
         for z in range(-4, 0):
             y = -2
-            box = makeAABox((x, y, z), (x + 1, y + 1, z + 1))
+            box = make_box((x, y, z), (x + 1, y + 1, z + 1))
             box.setColor(*color)
-            box = makeAABox((x, y + 5, z), (x + 1, y + 6, z + 1))
+            box = make_box((x, y + 5, z), (x + 1, y + 6, z + 1))
             box.setColor(*color)
 
     for y in range(-2, 2):
         for z in range(-4, 0):
             x = -2
-            box = makeAABox((x, y + 1, z), (x + 1, y + 2, z + 1))
+            box = make_box((x, y + 1, z), (x + 1, y + 2, z + 1))
             box.setColor(*color)
-            box = makeAABox((x + 5, y + 1, z), (x + 6, y + 2, z + 1))
+            box = make_box((x + 5, y + 1, z), (x + 6, y + 2, z + 1))
             box.setColor(*color)
 
     for x in range(2):
         y = -1
         z = -3
-        box = makeAABox((x, y, z), (x + 1, y + 1, z + 1))
+        box = make_box((x, y, z), (x + 1, y + 1, z + 1))
         box.setColor(*color)
-        box = makeAABox((x, y + 3, z), (x + 1, y + 4, z + 1))
+        box = make_box((x, y + 3, z), (x + 1, y + 4, z + 1))
         box.setColor(*color)
 
-    box = makeAABox((0, -1, -2), (1, 0, -1))
+    box = make_box((0, -1, -2), (1, 0, -1))
     box.setColor(*color)
-    box = makeAABox((1, 2, -2), (2, 3, -1))
+    box = make_box((1, 2, -2), (2, 3, -1))
     box.setColor(*color)
 
-def startSequence():
+def start_sequence():
     global sequence_started
     if not sequence_started:
         cameraWarning.destroy()
@@ -319,57 +294,52 @@ def startSequence():
         sequence.setPlayRate(0.5)
         sequence_started = True
 
-def calcCameraPosition():
+def calc_camera_position():
     cam_x = cam_r * cos(cam_alpha) * cos(cam_beta)
     cam_y = cam_r * sin(cam_alpha) * cos(cam_beta)
     cam_z = cam_r * sin(cam_beta)
     base.camera.setPos(cam_x, cam_y, cam_z)
     base.camera.lookAt(0, 0, 0)
 
-def updateCamera(task):
-    # ensures movement for horizontal and vertical axes respectively
+def update_camera(task):
     global cam_alpha, cam_beta
-    # smooth movement using delta time
     dt = globalClock.getDt()
 
     moved = False
 
     if key_states["lookLeft"]:
         cam_alpha -= turn_speed * dt
-        calcCameraPosition()
+        calc_camera_position()
         moved = True
     if key_states["lookRight"]:
         cam_alpha += turn_speed * dt
-        calcCameraPosition()
+        calc_camera_position()
         moved = True
     if key_states["lookUp"]:
         cam_beta += turn_speed * dt
         if cam_beta > PI / 2:
             cam_beta = PI / 2 - 0.05
-        calcCameraPosition()
+        calc_camera_position()
         moved = True
     if key_states["lookDown"]:
         cam_beta -= turn_speed * dt
         if cam_beta < -PI / 2:
             cam_beta = -PI / 2 + 0.05
-        calcCameraPosition()
+        calc_camera_position()
         moved = True
 
-    # start the sequence if the camera was moved in any direction
-
-    # CHECK IF SEQUENCE STARTED GLOBAL FLAG NEEDED
     if moved:
-        startSequence()
+        start_sequence()
 
     return Task.cont
 
-def pressKey(key):
+def press_key(key):
     key_states[key] = True
 
-def releaseKey(key):
+def release_key(key):
     key_states[key] = False
 
-def importPieces():
+def import_pieces():
     f = open('pieces.json')
     data = json.load(f)
     f.close()
@@ -394,9 +364,9 @@ if __name__ == '__main__':
         style=1, fg=(1, 1, 1, 1), pos=(0.1, 0.1), scale=.07,
         parent=base.a2dBottomLeft, align=TextNode.ALeft)
 
-    addAmbientLight()
-    addPointLight((-3, -4, 2))
-    calcCameraPosition()
+    add_ambient_light()
+    add_point_light((-3, -4, 2))
+    calc_camera_position()
 
     buildBarrierBox([0.5, 0.5, 0.5, 1])
 
@@ -405,24 +375,22 @@ if __name__ == '__main__':
     piece3 = buildPieces([2, 0], [2, 0], [0, 1, 0, 1])  # Grün
     piece4 = buildPieces([2, 2], [2, 2], [0, 0, 1, 1])  # Blau
 
-    piece_sequence = importPieces()
+    piece_sequence = import_pieces()
     piece_mapping = [piece4, piece2, piece3, piece1]
     piece_intervals = createIntervalPositions(piece_sequence, piece_mapping)
 
     sequence = Sequence(*piece_intervals)
 
-    # accept key events for all 8 directions
-    base.accept('arrow_left', pressKey, ["lookLeft"])
-    base.accept('arrow_left-up', releaseKey, ["lookLeft"])
-    base.accept('arrow_right', pressKey, ["lookRight"])
-    base.accept('arrow_right-up', releaseKey, ["lookRight"])
-    base.accept('arrow_up', pressKey, ["lookUp"])
-    base.accept('arrow_up-up', releaseKey, ["lookUp"])
-    base.accept('arrow_down', pressKey, ["lookDown"])
-    base.accept('arrow_down-up', releaseKey, ["lookDown"])
+    base.accept('arrow_left', press_key, ["lookLeft"])
+    base.accept('arrow_left-up', release_key, ["lookLeft"])
+    base.accept('arrow_right', press_key, ["lookRight"])
+    base.accept('arrow_right-up', release_key, ["lookRight"])
+    base.accept('arrow_up', press_key, ["lookUp"])
+    base.accept('arrow_up-up', release_key, ["lookUp"])
+    base.accept('arrow_down', press_key, ["lookDown"])
+    base.accept('arrow_down-up', release_key, ["lookDown"])
     base.accept('escape', sys.exit)
 
-    # runs the application
     pauseButton = DirectButton(
         text="Pause/Play", scale=0.07, pos=(-0.5, 0.5, -0.4),
         command=toggleSequence, parent=base.a2dTopRight
@@ -458,7 +426,5 @@ if __name__ == '__main__':
         align=TextNode.ACenter, parent=base.a2dBottomCenter
     )
 
-    # starts the camera detection
-    taskMgr.add(updateCamera, "updateCameraTask")
-
+    taskMgr.add(update_camera, "update_camera_task")
     base.run()
