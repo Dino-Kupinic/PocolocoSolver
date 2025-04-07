@@ -51,9 +51,9 @@ python src/visualisation/renderer.py
 - [@Melanie Rahofer](https://www.github.com/mrahofer)
 - [@Karaman Samed](https://www.github.com/SKaramanGit)
 
-## 👀 Tech Stack
+## 👀 Technologies
 
-Python, Panda3D
+Python, Panda3D, NumPy, PyTest
 
 ## 🦞 License
 
