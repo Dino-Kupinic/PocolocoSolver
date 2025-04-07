@@ -2,6 +2,11 @@
 
 Pocoloco solver solves the [Pocoloco Puzzle](https://rombol.de/products/poco-loco-yavuz-demirhan-turkei-2014-holzspiel-denkspiel-knobelspiel-geduldspiel-aus-holz?srsltid=AfmBOoqXSUB5CWBYS7NhAHXwsx_IGFGyIFNRlFZKRMo88o-vCOwNQh5x) in Python with 3d visualization
 
+![Pocoloco Solver](.github/pocoloco.png)
+
+> [!CAUTION]
+> This project only works on Windows
+
 ## 🙌 Installation and Configuration
 
 1. Clone the repository:
