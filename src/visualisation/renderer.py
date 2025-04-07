@@ -301,7 +301,7 @@ def calc_camera_position():
     base.camera.setPos(cam_x, cam_y, cam_z)
     base.camera.lookAt(0, 0, 0)
 
-def update_camera():
+def update_camera(task):
     global cam_alpha, cam_beta
     dt = globalClock.getDt()
 
@@ -426,5 +426,5 @@ if __name__ == '__main__':
         align=TextNode.ACenter, parent=base.a2dBottomCenter
     )
 
-    taskMgr.add(update_camera)
+    taskMgr.add(update_camera, "update_camera_task")
     base.run()
